@@ -344,7 +344,8 @@ var LayerSwitcher = function (_Control) {
                         li.appendChild(img);
                     });
                 }
-                else {
+                else if (lyr.get('type') === undefined) {
+                    // not a base layer
                     var img = document.createElement('img');
                     img.className = 'legend';
                     if (lyr.get('title') === 'Cadastre') {

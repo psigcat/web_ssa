@@ -173,8 +173,8 @@
                 </h2>
                 <div class="content">
                     <div class="row">
-                        <!--<iframe src="normativasSSA/" width="100%" height="550px">-->
-                        <iframe src="http://mapa.psig.es:8002/normativasSSA" width="100%" height="575px" frameborder="0"></iframe>
+                        <iframe src="/ssa/normativas/" width="100%" height="575px"></iframe>
+                        <!--<iframe src="http://mapa.psig.es:8002/normativasSSA" width="100%" height="575px" frameborder="0"></iframe>-->
                     </div>
                 </div>
             </div>
