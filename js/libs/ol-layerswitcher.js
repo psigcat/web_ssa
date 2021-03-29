@@ -340,7 +340,7 @@ var LayerSwitcher = function (_Control) {
                     sublyrs.forEach(function(sublyrTitle) {
                         var img = document.createElement('img');
                         img.className = 'legend';
-                        img.src = this_.urlWMSqgis + '?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER='+sublyrTitle.trim()+'&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0';                    
+                        img.src = this_.urlWMSqgis + '?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER='+sublyrTitle.trim();                    
                         li.appendChild(img);
                     });
                 }
@@ -350,7 +350,7 @@ var LayerSwitcher = function (_Control) {
                     if (lyr.get('title') === 'Cadastre') {
                         img.src = 'http://ovc.catastro.meh.es/Cartografia/WMS/simbolos.png?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Catastro&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0';
                     } else {
-                        img.src = this_.urlWMSqgis + '?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER='+lyrTitle+'&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0';
+                        img.src = this_.urlWMSqgis + '?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER='+lyrTitle;
                     }
                     li.appendChild(document.createElement('br'));
                     li.appendChild(img);

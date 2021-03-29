@@ -49,26 +49,10 @@ var overlays = [
 	{name: "ssa_edificacio", title: "Condicions d'edificació", legend: "Volumetries (pol), Profunditat edificable", sublayers: "Volumetries (pol)"},
 	{name: "ssa_sectorspau", title: "Sectors - PAU"},
 	{name: "ssa_ambitssu", title: "Àmbits al SU"},
-	{name: "ssa_proteccios", title: "Proteccions del medi"},
+	{name: "ssa_proteccio", title: "Protecció dels rius"},
 	{name: "ssa_catalegs", title: "Catàleg", sublayers: "Patrimoni, Masies i cases rurals, Catàleg - polígons"},
 	{name: "ssa_tm", title: ""}
 ];
-
-// list of overlays -- testing
-// name: layer name used by qgis project
-// title: visible name, not shown by layerswitcher if empty
-// legend: used to get sub layer legends if not empty
-/*var overlays = [
-	{name: "Carrerer", title: ""},
-	{name: "Règim del sòl", title: "Règim del sòl"},
-	{name: "Qualificació", title: "Qualificació", legend: "Zones SU, Desenvolupament, Zones SNU"},
-	{name: "Condicions d'edificació", title: "Condicions d'edificació", legend: "Volumetries (pol), Profunditat edificable"},
-	{name: "Sectors - PAU", title: "Sectors - PAU"},
-	{name: "Àmbits al SU", title: "Àmbits al SU"},
-	{name: "Proteccions del medi", title: "Proteccions del medi"},
-	{name: "Catàleg", title: "Catàleg"},
-	{name: "T.M. (Juliol 2006)", title: ""}
-];*/
 
 // Measure
 // http://openlayers.org/en/latest/examples/measure.html
@@ -483,7 +467,7 @@ function map_service($http,$rootScope){
 		overlays.forEach(function(layer, i) {
 
 			if (layer.title !== "" && 
-				layer.title !== "Proteccions del medi") {	// exclude from GetFeatureInfo
+				layer.title !== "Protecció dels rius") {	// exclude from GetFeatureInfo
             
 	            qgisSources[layer.title] = 
 
