@@ -421,7 +421,8 @@ function map_service($http,$rootScope){
             params: {
             	'LAYERS': 'MUC_2CLAS', 
             	'TILED': true,
-            	'SRS': 'EPSG:25831'
+            	'CRS': 'EPSG:25831',
+            	//'SRS': 'EPSG:25831'
             },
             //serverType: 'geoserver'
         });
@@ -446,7 +447,8 @@ function map_service($http,$rootScope){
             params: {
             	'LAYERS': 'MUC_4QUAL, MUC_3SECT', 
             	'TILED': true,
-            	'SRS': 'EPSG:25831'
+            	'CRS': 'EPSG:25831',
+            	//'SRS': 'EPSG:25831'
             },
             //serverType: 'geoserver'
         });
