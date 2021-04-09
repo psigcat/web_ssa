@@ -45,12 +45,12 @@ var mainBar, subBar, mainToggle, catastroLayer;
 var overlays = [
 	{name: "ssa_carrerer", title: ""},
 	{name: "ssa_regim", title: "Règim del sòl"},
-	{name: "ssa_qualificacio", title: "Qualificació", legend: "Zones SU, Desenvolupament, Zones SNU", sublayers: "Zones SU, Desenvolupament, Zones SNU, Claus Zones SU"},
+	{name: "ssa_qualificacio", title: "Qualificació", legend: "Zones SU, Desenvolupament, Zones SNU", sublayers: "Zones SU, Desenvolupament, Zones SNU, Clau 9"},
 	{name: "ssa_edificacio", title: "Condicions d'edificació", legend: "Volumetries (pol), Profunditat edificable", sublayers: "Volumetries (pol)"},
 	{name: "ssa_sectorspau", title: "Sectors - PAU"},
 	{name: "ssa_ambitssu", title: "Àmbits al SU"},
 	{name: "ssa_proteccio", title: "Protecció dels rius"},
-	{name: "ssa_catalegs", title: "Catàleg", sublayers: "Patrimoni, Masies i cases rurals, Catàleg - polígons"},
+	{name: "ssa_catalegs", title: "Catàleg", sublayers: "Patrimoni, Masies i cases rurals, Catàleg"},
 	{name: "ssa_tm", title: ""}
 ];
 
@@ -586,6 +586,7 @@ function map_service($http,$rootScope){
 		//empty infoPanel
 		$('#infoPanel .content').empty();
 		$('#infoPanel .content-catastro').empty();
+		$('#infoPanel .content-coord').empty();
 		
 		if(highLightSource){
 	    	highLightSource.clear();
@@ -707,10 +708,11 @@ function map_service($http,$rootScope){
 		    		// get sublayers instead of layers GetFeatureInfo
 		    		var sublayers = renderedLayers[key].get("sublayers");
 		    		if (sublayers !== undefined) {
-						console.log(key, " -> GetFeatureInfo for sublayers: ", sublayers);
+						//console.log(key, " -> GetFeatureInfo for sublayers: ", sublayers);
 		    			sources = qgisSublayerSources[key];
 		    		}
 		    		else {
+						//console.log(key, " -> GetFeatureInfo for layer: ", key, qgisSources[key]);
 		    			sources = [qgisSources[key]];
 					}
 
@@ -921,11 +923,14 @@ function map_service($http,$rootScope){
 		if (catastroLayer.getVisible()) {
 
 			// add cataster reference
+			console.log("getCatasterRefFromCoord: "+coordinates[0]+":"+coordinates[1]);
 			log("getCatasterRefFromCoord: "+coordinates[0]+":"+coordinates[1]);
 
-			coordinates = ol.proj.transform([coordinates[0], coordinates[1]], 'EPSG:3857', ol.proj.get('EPSG:25831'));
+			let coords = ol.proj.transform([coordinates[0], coordinates[1]], 'EPSG:3857', ol.proj.get('EPSG:25831'));
 
-			placesService.getCatasterRefFromCoord(coordinates[0],coordinates[1]).then(function(data) {
+			placesService.getCatasterRefFromCoord(coords[0],coords[1]).then(function(data) {
+
+				//console.log(data.message);
 
 				if (data.message && data.message.refcat !== undefined) {
 					// show cadastre info
@@ -934,13 +939,26 @@ function map_service($http,$rootScope){
 					//html += "<p><a target='_blank' href='https://www1.sedecatastro.gob.es/CYCBienInmueble/SECListaBienes.aspx?del=8&muni=240&rc1="+data.message.pcat1+"&rc2="+data.message.pcat2+"'>"+data.message.refcat+"</a></p>";
 					html += "<p><a target='_blank' href='https://www1.sedecatastro.gob.es/CYCBienInmueble/OVCListaBienes.aspx?del=8&muni=240&rc1="+data.message.pcat1+"&rc2="+data.message.pcat2+"'>"+data.message.refcat+"</a></p>";
 
-					$('#infoPanel .content-catastro').append(html);
+					if (iconLayer !== null) {
+						$('#infoPanel .content-catastro').append(html);
+					    $("#infoPanel").show();
+					}
 				}
 			})
 			.catch(function (error) {
 			 	log("error in getCatasterRefFromPoligon: ", error);
 		    });
 		}
+
+	    let coordsTxt = "<h3>Coordenades identificades</h3>";
+	    let coords = ol.proj.transform([coordinates[0], coordinates[1]], 'EPSG:3857', ol.proj.get('EPSG:25831'));
+	    //coordsTxt += "<p>X=" + coords[0].toFixed(1);
+	    //coordsTxt += " Y=" + coords[1].toFixed(1);
+	    coordsTxt += "<p>X=" + coords[0].toLocaleString('es-ES', { decimal: ',', useGrouping: false, minimumFractionDigits: 1, maximumFractionDigits: 1 });
+	    coordsTxt += " Y=" + coords[1].toLocaleString('es-ES', { decimal: ',', useGrouping: false, minimumFractionDigits: 1, maximumFractionDigits: 1 });
+	    coordsTxt += "</p>";
+	    $('#infoPanel .content-coord').append(coordsTxt);
+	    //$("#infoPanel").show();
 	}
 
 	function getHtmlP(label, content) {

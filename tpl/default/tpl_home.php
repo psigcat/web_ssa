@@ -64,9 +64,9 @@
 	                INFO
 	                <a href="#" class="pull-right"><i class="fa fa-fw fa-times"></i></a>
 	            </h2>
-                <div class="content">
-                </div>
-                <div class="content-catastro">  
+                <div class="content"></div>
+                <div class="content-coord"></div>                 
+                <div class="content-catastro"></div>                 
                 </div>                 
             </div>
             

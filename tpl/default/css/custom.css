@@ -237,10 +237,10 @@ div.table-list ul li.shoe .custom-badge {
 .window h2 a i.fa {
   color: #d5b215;
 }
-.window .content, .window .content-catastro {
+.window .content, .window .content-catastro, .window .content-coord {
   padding: 15px;
 }
-.window .content h3, .window .content-catastro h3 {
+.window .content h3, .window .content-catastro h3, .window .content-coord h3 {
   color: #333333;
   margin: .8em 0;
   padding: 0 0 .2em 0;
@@ -248,10 +248,10 @@ div.table-list ul li.shoe .custom-badge {
   font-size: 13px;
   font-weight: bold;
 }
-.window .content h3:first-child, .window .content-catastro h3:first-child {
+.window .content h3:first-child, .window .content-catastro h3:first-child, .window .content-coord h3:first-child {
   margin-top: 0;
 }
-.window .content img.full-width, .window .content-catastro img.full-width {
+.window .content img.full-width, .window .content-catastro img.full-width, .window .content-coord img.full-width {
   width: 100%;
 }
 .window.main {
