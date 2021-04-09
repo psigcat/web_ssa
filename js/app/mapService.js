@@ -923,7 +923,6 @@ function map_service($http,$rootScope){
 		if (catastroLayer.getVisible()) {
 
 			// add cataster reference
-			console.log("getCatasterRefFromCoord: "+coordinates[0]+":"+coordinates[1]);
 			log("getCatasterRefFromCoord: "+coordinates[0]+":"+coordinates[1]);
 
 			let coords = ol.proj.transform([coordinates[0], coordinates[1]], 'EPSG:3857', ol.proj.get('EPSG:25831'));

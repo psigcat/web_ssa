@@ -155,6 +155,32 @@ Controller.$inject = [
 
                 return false;
             });
+
+
+            $(".btn-searchCatasterRef").click(function() {
+				var $ref = $("#searchReferencia").val();
+
+				placesService.getCatasterRef($ref).then(function(data) {
+					//console.log(data.message);
+					//console.log(data.message.pcat1, data.message.pcat2);
+					//console.log(data.message.x, data.message.y);
+					mapService.zoomToCoord(data.message.x,data.message.y);
+					mapService.highlightPoligon(data.message.geom);
+				})
+				.catch(function (error) {
+				 	log("error in getCatasterRef:", error);
+			    });
+			});
+
+			$(".btn-searchLoc").click(function() {
+				var x = Number($("#searchX").val());
+				var y = Number($("#searchY").val());
+
+				if ($scope.isNumeric(x) && $scope.isNumeric(y)) {
+					mapService.zoomToCoord(x,y);
+				}
+			});
+
 		}
 		
 		$scope.searchResultsContainer = window.document.querySelector('.window.search');
@@ -218,8 +244,10 @@ Controller.$inject = [
 		    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 		}
 
+		/*
 		$scope.searchCatasterRef = function() {
 			var $ref = $("#searchReferencia").val();
+			console.log("searchCatasterRef", $ref);
 
 			placesService.getCatasterRef($ref).then(function(data) {
 				console.log(data.message);
@@ -241,6 +269,7 @@ Controller.$inject = [
 				mapService.zoomToCoord(x,y);
 			}
 		};
+		*/
 
 		//****************************************************************
     	//***********************        REPORTS       *******************

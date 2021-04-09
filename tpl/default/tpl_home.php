@@ -116,7 +116,7 @@
                         <input type="text" id="searchReferencia" name="searchReferencia" />
                     </p>
                     <p>
-                        <button type="button" class="btn btn-default" ng-click="searchCatasterRef()">Buscar parcel·la</button>
+                        <button type="button" class="btn btn-default btn-searchCatasterRef" ng-click="searchCatasterRef()">Buscar parcel·la</button>
                     </p>
 
                     <h3>Cerca al cadastre de rústica</h3>
@@ -143,11 +143,11 @@
                         <input type="text" id="searchY" name="searchY" />
                     </p>
                     <p>
-                        <button type="button" class="btn btn-default" ng-click="searchLoc()">Buscar localització</button>
+                        <button type="button" class="btn btn-default btn-searchLoc" ng-click="searchLoc()">Buscar localització</button>
                     </p>
 
                     <p>
-                        <input type="radio" name="searchinfo" id="searchradio1" value="info" ng-checked="true">
+                        <input type="radio" name="searchinfo" id="searchradio1" value="info" ng-checked="true" checked="checked">
                         <label for="searchradio1">Cerca i mostra informació</label>
                         <br />
                         <input type="radio" name="searchinfo" id="searchradio2" value="search">
