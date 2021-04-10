@@ -98,6 +98,10 @@ function map_service($http,$rootScope){
 		var projection 				= ol.proj.get('EPSG:4326');
 		var extent    				= [-1.757,40.306,3.335,42.829];
 		urlWMSqgis					= _urlWMSqgis;
+
+		// register projection
+		proj4.defs("EPSG:25831", "+proj=utm +zone=31 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0+units=m +no_defs");
+		if (ol.proj.proj4 && ol.proj.proj4.register) { ol.proj.proj4.register(proj4); }
 	
 		//background raster
 		raster 					= new ol.layer.Tile({ });
@@ -421,9 +425,8 @@ function map_service($http,$rootScope){
             params: {
             	'LAYERS': 'MUC_2CLAS', 
             	'TILED': true,
-            	'CRS': 'EPSG:25831',
-            	//'SRS': 'EPSG:25831'
             },
+            projection: 'EPSG:25831',
             //serverType: 'geoserver'
         });
 
@@ -447,9 +450,8 @@ function map_service($http,$rootScope){
             params: {
             	'LAYERS': 'MUC_4QUAL, MUC_3SECT', 
             	'TILED': true,
-            	'CRS': 'EPSG:25831',
-            	//'SRS': 'EPSG:25831'
             },
+            projection: 'EPSG:25831',
             //serverType: 'geoserver'
         });
 

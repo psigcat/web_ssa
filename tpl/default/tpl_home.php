@@ -393,7 +393,7 @@
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.js"></script>
         <script src="js/libs/ol-ext.min.js"></script>
         <script src="js/libs/ol-layerswitcher.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.4/proj4.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
         <script src="https://epsg.io/25831.js"></script>
 
         <!-- angular-bootstrap-ui -->
