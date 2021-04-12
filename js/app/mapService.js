@@ -1357,7 +1357,7 @@ function map_service($http,$rootScope){
         //var size = /** @type {module:ol/size~Size} */ (map.getSize());
 
     	var extent = map.getView().calculateExtent([width, height]);
-    	var url = urlWMSqgis+'?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetPrint&FORMAT=pdf&TRANSPARENT=true&LAYERS=POUM%20SSA&CRS=EPSG:3857&map0:STYLES=&map0:extent='+extent+'&TEMPLATE='+template+'&DPI=120';
+    	var url = urlWMSqgis+'?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetPrint&FORMAT=pdf&TRANSPARENT=true&CRS=EPSG:3857&map0:STYLES=&map0:extent='+extent+'&TEMPLATE='+template+'&DPI=120';
 		$(this).attr("target", "_blank");
         window.open(url);
         return false;
