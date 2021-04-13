@@ -36,6 +36,7 @@ var qgisSources					= {};
 var qgisSublayerSources 		= {};
 var layerSwitcher;
 var mainBar, subBar, mainToggle, catastroLayer;
+var mapid, mapname;
 
 // list of overlays
 // name: internal name used by mapproxy
@@ -43,15 +44,15 @@ var mainBar, subBar, mainToggle, catastroLayer;
 // legend: used to get sub layer legends if not empty
 // sublayers: workaround for https://lists.osgeo.org/pipermail/qgis-developer/2018-July/053924.html
 var overlays = [
-	{name: "ssa_carrerer", title: ""},
-	{name: "ssa_regim", title: "Règim del sòl"},
-	{name: "ssa_qualificacio", title: "Qualificació", legend: "Zones SU, Desenvolupament, Zones SNU", sublayers: "Zones SU, Desenvolupament, Zones SNU, Clau 9"},
-	{name: "ssa_edificacio", title: "Condicions d'edificació", legend: "Volumetries (pol), Profunditat edificable", sublayers: "Volumetries (pol)"},
-	{name: "ssa_sectorspau", title: "Sectors - PAU"},
-	{name: "ssa_ambitssu", title: "Àmbits al SU"},
-	{name: "ssa_proteccio", title: "Protecció dels rius"},
-	{name: "ssa_catalegs", title: "Catàleg", sublayers: "Patrimoni, Masies i cases rurals, Catàleg"},
-	{name: "ssa_tm", title: ""}
+	{name: "ssa_poum_group_carrerer", title: ""},
+	{name: "ssa_poum_layer_regim_del_sol", title: "Règim del sòl"},
+	{name: "ssa_poum_group_qualificacio", title: "Qualificació", legend: "Zones SU, Desenvolupament, Zones SNU", sublayers: "Zones SU, Desenvolupament, Zones SNU, Clau 9"},
+	{name: "ssa_poum_layer_profunditat_edificable", title: "Condicions d'edificació", legend: "Volumetries (pol), Profunditat edificable", sublayers: "Volumetries (pol)"},
+	{name: "ssa_poum_layer_sectors_-_pau", title: "Sectors - PAU"},
+	{name: "ssa_poum_layer_ambits_al_su", title: "Àmbits al SU"},
+	{name: "ssa_poum_layer_proteccio_dels_rius", title: "Protecció dels rius"},
+	{name: "ssa_poum_group_ambits_cataleg", title: "Catàleg", sublayers: "Patrimoni, Masies i cases rurals, Catàleg"},
+	{name: "ssa_poum_layer_tm_juliol_2006", title: ""}
 ];
 
 // Measure
@@ -84,7 +85,7 @@ function map_service($http,$rootScope){
 	}
 	
 
-	function init(_urlWMS,_urlWMSqgis,_backgroundMap,_zoomTrigger,_placesService){
+	function init(_urlWMS,_urlWMSqgis,_backgroundMap,_zoomTrigger,_placesService,_mapid,_mapname){
 		log("init("+_urlWMS+","+_urlWMSqgis+","+backgroundMap+","+_zoomTrigger+")");
 
 		//****************************************************************
@@ -98,6 +99,8 @@ function map_service($http,$rootScope){
 		var projection 				= ol.proj.get('EPSG:4326');
 		var extent    				= [-1.757,40.306,3.335,42.829];
 		urlWMSqgis					= _urlWMSqgis;
+		mapid						= _mapid;
+		mapname						= _mapname;
 
 		// register projection
 		proj4.defs("EPSG:25831", "+proj=utm +zone=31 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0+units=m +no_defs");
@@ -132,238 +135,215 @@ function map_service($http,$rootScope){
 					            }
 					        });*/
 
-		var qgisLayers = [
-							new ol.layer.Group({
-				                'title': 'Capes de referència',
-				                layers: [
-				                    new ol.layer.Tile({
-				                        title: 'Cap fons',
-				                        type: 'base'
-				                    }),
-				                    new ol.layer.Tile({
-				                        title: 'Topogràfic 1:5.000 (by ICGC)',
-				                        type: 'base',
-				                        visible: false,
-				                        source: new ol.source.TileWMS({
-											url: 'http://geoserveis.icgc.cat/icc_mapesbase/wms/service?',
-								            params: {'LAYERS': 'mtc5m', 'VERSION': '1.1.1'}
-								        })
-				                    }),
-				                    new ol.layer.Tile({
-				                        title: 'Ortofoto (by ICGC)',
-				                        type: 'base',
-				                        visible: false,
-				                        source: new ol.source.WMTS({
-											url: 'http://www.ign.es/wmts/pnoa-ma',
-							                layer: 'OI.OrthoimageCoverage',
-											matrixSet: 'EPSG:4326',
-											//matrixSet: 'EPSG:3857',
-											format: 'image/png',
-											projection: ol.proj.get('EPSG:4326'),
-											tileGrid: new ol.tilegrid.WMTS({
-											  origin: ol.extent.getTopLeft(projectionExtentBG),
-											  resolutions: resolutionsBG,
-											  matrixIds: matrixIdsBG
-											}),
-											style: 'default'
-									 	})
-				                    }),
-				                    new ol.layer.Tile({
-				                        title: 'OpenStreetMap, estilo Dak Matter (by Carto)',
-				                        type: 'base',
-				                        visible: false,
-				                        source: new ol.source.XYZ({
-				                        	url: 'http://{1-4}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
-				                        })
-				                    }),
-				                    new ol.layer.Tile({
-				                        title: 'OpenStreetMap, estilo Positron (by Carto)',
-				                        type: 'base',
-				                        visible: true,
-				                        source: new ol.source.XYZ({
-				                        	url: 'http://{1-4}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
-				                        })
-				                    })
-				                ]
-				            }),
-				            /*new ol.layer.Group({
-				                title: 'Altres capes a partir de wms',
-				                layers: [
-				                    new ol.layer.Tile({
-				                        title: ' ',
-				                        type: 'personal',
-				                        visible: false,
-				                        source: wmsLayerSource
-				                    })
-				                ]
-				            }),*/
-				            new ol.layer.Group({
-				                title: 'Capes temàtiques',
-				                layers: getLayerOverlays()
-				            })
-						];
+		let baseLayerNull = new ol.layer.Tile({
+								name: 'baseLayerNull',
+			                    title: 'Cap fons',
+			                    type: 'base'
+			                });
 
-		//map
-		map 				= new ol.Map({
-				        			/*controls: ol.control.defaults().extend([
-										new ol.control.ScaleLine({
-										units: 'degrees'
-									})
-								]),*/				
-								target: 'map',
-								layers: qgisLayers
-        					});
+		let baseLayerTopo = new ol.layer.Tile({
+								name: 'baseLayerTopo',
+		                        title: 'Topogràfic 1:5.000 (by ICGC)',
+		                        type: 'base',
+		                        visible: false,
+		                        source: new ol.source.TileWMS({
+									url: 'http://geoserveis.icgc.cat/icc_mapesbase/wms/service?',
+						            params: {'LAYERS': 'mtc5m', 'VERSION': '1.1.1'}
+						        })
+		                    });
 
-        //map.addLayer(raster);
-        map.setView(view);
-		viewProjection = view.getProjection();
-		viewResolution = view.getResolution();
+		let baseLayerFoto = new ol.layer.Tile({
+		                        title: 'Ortofoto (by ICGC)',
+		                        type: 'base',
+		                        visible: false,
+		                        source: new ol.source.WMTS({
+									url: 'http://www.ign.es/wmts/pnoa-ma',
+					                layer: 'OI.OrthoimageCoverage',
+									matrixSet: 'EPSG:4326',
+									//matrixSet: 'EPSG:3857',
+									format: 'image/png',
+									projection: ol.proj.get('EPSG:4326'),
+									tileGrid: new ol.tilegrid.WMTS({
+									  origin: ol.extent.getTopLeft(projectionExtentBG),
+									  resolutions: resolutionsBG,
+									  matrixIds: matrixIdsBG
+									}),
+									style: 'default'
+							 	})
+		                    });
 
-		//render WMS layers
-		//renderWMSqgis(layers[0]);
-		//renderWMSqgisLayers(layers);
-		//setActiveLayer('Patrimoni');
+		let baseLayerDark = new ol.layer.Tile({
+		                        title: 'OpenStreetMap, estilo Dak Matter (by Carto)',
+		                        type: 'base',
+		                        visible: false,
+		                        source: new ol.source.XYZ({
+		                        	url: 'http://{1-4}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
+		                        })
+		                    });
 
-		setHighLightStyle();
-		setQgisLayerSources();
-		setQgisSubLayerSources();
+		let baseLayerPositron = new ol.layer.Tile({
+		                        title: 'OpenStreetMap, estilo Positron (by Carto)',
+		                        type: 'base',
+		                        visible: true,
+		                        source: new ol.source.XYZ({
+		                        	url: 'http://{1-4}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+		                        })
+		                    });
 
-		layerSwitcher = new ol.control.LayerSwitcher({ 
-			target: document.getElementById("layerswitcher"),
-			urlWMSqgis: urlWMSqgis
-		});
-	    map.addControl(layerSwitcher);
-	    layerSwitcher.panel.onmouseout = function (e) {
-            //overwrite default behaviour to keep layerswitcher open
-        }
+		var baseLayers = [
+			baseLayerNull,
+			baseLayerTopo,
+			baseLayerFoto,
+			baseLayerDark,
+			baseLayerPositron
+		];
 
-    	//****************************************************************
-    	//***********************     CLICK EVENT  ***********************
-    	//****************************************************************
-    
-		map.on('click', function(evt) {
-			//log("click coordinates: "+evt.coordinate);
+		// load QGS project definition from parsed file
+		$.when(
+            $.getJSON("js/data/"+mapid+".qgs.json", {})   
+            .done (function( data ) {
 
-			if (!measureActive) {
-				selectFeatureInfo(evt.coordinate);
-				showIcon(evt.coordinate);
-			}
-		});
+	            //overlays = data;
+	           	//console.log(overlays);
 
-		map.on('pointermove', function(evt) {
+				//map
+				map = new ol.Map({
+	        			/*controls: ol.control.defaults().extend([
+							new ol.control.ScaleLine({
+							units: 'degrees'
+						})
+					]),*/				
+					target: 'map',
+					layers: [
+						new ol.layer.Group({
+			                'title': 'Capes de referència',
+			                layers: baseLayers
+			            }),
+			            new ol.layer.Group({
+			                title: 'Capes temàtiques',
+			                layers: getLayerOverlays()
+			            })
+					]
+				});
 
-			if (measureActive) {
-				pointerMoveHandler(evt);
-			}
+		        //map.addLayer(raster);
+		        map.setView(view);
+				viewProjection = view.getProjection();
+				viewResolution = view.getResolution();
 
-			//https://openlayers.org/en/latest/examples/getfeatureinfo-tile.html
-			/*console.log(evt, evt.target);
+				//render WMS layers
+				//renderWMSqgis(layers[0]);
+				//renderWMSqgisLayers(layers);
+				//setActiveLayer('Patrimoni');
 
-			if (evt.dragging) {
-			  return;
-			}
-			var pixel = map.getEventPixel(evt.originalEvent);
-			var hit = map.forEachLayerAtPixel(pixel, function() {
-			  return true;
-			});
-			console.log(hit);
-			map.getTargetElement().style.cursor = hit ? 'pointer' : '';*/
-		});
+				setHighLightStyle();
+				setQgisLayerSources();
+				setQgisSubLayerSources();
 
-		$(document).keyup(function(e) {
-			if (e.keyCode == 27) { // escape
-		    	map.removeInteraction(draw);
-		    	map.removeOverlay(measureTooltip);
-		    	removeHelpTooltip();
-		    	$('.tooltip').addClass('hidden');
-		    	mainToggle.toggle();
-		    	measureSource.clear();
-			}
-		});
+				layerSwitcher = new ol.control.LayerSwitcher({ 
+					target: document.getElementById("layerswitcher"),
+					urlWMSqgis: urlWMSqgis
+				});
+			    map.addControl(layerSwitcher);
+			    layerSwitcher.panel.onmouseout = function (e) {
+		            //overwrite default behaviour to keep layerswitcher open
+		        }
 
-		$( document ).ready(function() {
-			layerSwitcher.showPanel();
+		    	//****************************************************************
+		    	//***********************     CLICK EVENT  ***********************
+		    	//****************************************************************
+		    
+				map.on('click', function(evt) {
+					//log("click coordinates: "+evt.coordinate);
 
-			// make label editable
-	        // test with
-	        // http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx
-			/*var wmsLi = "#layerswitcher li.group:nth-child(2) li.layer";
-	        $(wmsLi+" input").after(' <a href="#" id="wms" data-type="text" data-url="" data-title="URL del servicio WMS" value="">Afegeix un servei WMS</a>');
-	        $.fn.editable.defaults.mode = 'inline';
+					if (!measureActive) {
+						selectFeatureInfo(evt.coordinate);
+						showIcon(evt.coordinate);
+					}
+				});
 
-	        $(wmsLi+" #wms").editable({
-	            type: 'text',
-	            url: '',
-	            title: 'URL del servicio WMS',
-	            value: '',
-	            success: function(response, newValue) {
-	            	console.log(newValue);
-			        if (newValue.startsWith("http")) {
-				        //load GetCapabilities to parse layers
-				        $.get(newValue+'?SERVICE=WMS&REQUEST=GetCapabilities').then(function(response){
-				        	var xmlDoc = $.parseXML(response.documentElement.innerHTML), 
-				            $xml = $(xmlDoc);
-				            console.log($xml);
-					        $(wmsLi).append('<select id="wmsLayer"><option value="" selected>Selecciona una capa</option></select>');
-					    });
+				map.on('pointermove', function(evt) {
 
-			        } else {
-			        	//$("#layerswitcher li.group:last-child li.layer:nth-child(5) input").click();
-				    	wmsLayerSource.setUrl("");
-				        wmsLayerSource.refresh();
-				        $(this).editable('setValue', 'Afegeix un servei WMS');
-				        $(wmsLi+" input").prop('checked', false);
-				        return "URL no vàlida, ha de començar amb http://";
-			        }
-			    },
-			    error: function(data) {
-			    	console.log("error",data);
-			    	wmsLayerSource.setUrl("");
-			        wmsLayerSource.refresh();
-			        $(wmsLi+" input").prop('checked', false);
-    			}
-	        });*/
-		});
-    	
-    	//****************************************************************
-    	//******************  EVENT ZOOM LEVEL CHANGE  *******************
-    	//****************************************************************
-    	
-    	/*map.on('moveend', function(evt){
-	    	var newZoomLevel = map.getView().getZoom();
-	    	if (newZoomLevel != currentZoomLevel){
-		      	currentZoomLevel = newZoomLevel;
-		    }
-	    });*/
+					if (measureActive) {
+						pointerMoveHandler(evt);
+					}
 
-    	//****************************************************************
-    	//******************  MEASURE TOOL  ******************************
-    	//****************************************************************
+					//https://openlayers.org/en/latest/examples/getfeatureinfo-tile.html
+					/*console.log(evt, evt.target);
 
-		measureSource = new ol.source.Vector();
+					if (evt.dragging) {
+					  return;
+					}
+					var pixel = map.getEventPixel(evt.originalEvent);
+					var hit = map.forEachLayerAtPixel(pixel, function() {
+					  return true;
+					});
+					console.log(hit);
+					map.getTargetElement().style.cursor = hit ? 'pointer' : '';*/
+				});
 
-    	var measureLayer = new ol.layer.Vector({
-			source: measureSource,
-			style: new ol.style.Style({
-				fill: new ol.style.Fill({
-					color: 'rgba(255, 255, 255, 0.2)'
-				}),
-				stroke: new ol.style.Stroke({
-					color: '#ffcc33',
-					width: 2
-				}),
-				image: new ol.style.Circle({
-					radius: 7,
-					fill: new ol.style.Fill({
-				  		color: '#ffcc33'
+				$(document).keyup(function(e) {
+					if (e.keyCode == 27) { // escape
+				    	map.removeInteraction(draw);
+				    	map.removeOverlay(measureTooltip);
+				    	removeHelpTooltip();
+				    	$('.tooltip').addClass('hidden');
+				    	mainToggle.toggle();
+				    	measureSource.clear();
+					}
+				});
+
+				$( document ).ready(function() {
+					layerSwitcher.showPanel();
+				});
+		    	
+		    	//****************************************************************
+		    	//******************  EVENT ZOOM LEVEL CHANGE  *******************
+		    	//****************************************************************
+		    	
+		    	/*map.on('moveend', function(evt){
+			    	var newZoomLevel = map.getView().getZoom();
+			    	if (newZoomLevel != currentZoomLevel){
+				      	currentZoomLevel = newZoomLevel;
+				    }
+			    });*/
+
+		    	//****************************************************************
+		    	//******************  MEASURE TOOL  ******************************
+		    	//****************************************************************
+
+				measureSource = new ol.source.Vector();
+
+		    	var measureLayer = new ol.layer.Vector({
+					source: measureSource,
+					style: new ol.style.Style({
+						fill: new ol.style.Fill({
+							color: 'rgba(255, 255, 255, 0.2)'
+						}),
+						stroke: new ol.style.Stroke({
+							color: '#ffcc33',
+							width: 2
+						}),
+						image: new ol.style.Circle({
+							radius: 7,
+							fill: new ol.style.Fill({
+						  		color: '#ffcc33'
+							})
+						})
 					})
-				})
-			})
-      	});
+		      	});
 
-        map.addLayer(measureLayer);
+		        map.addLayer(measureLayer);
 
-		initMeasureBar();
+				initMeasureBar();
+
+		    })
+		    .fail(function(data) {    
+                console.log("json error in "+mapid+".qgs.json");  
+            })
+        ).then(function() { 
+            console.log("json file "+mapid+".json loaded!");
+        });
 	}
 
 	function getLayerOverlays() {
@@ -396,6 +376,90 @@ function map_service($http,$rootScope){
 				renderedLayers[layer.title] = newLayer;
 			}
         });
+
+		return layers;
+	}
+
+	function getLayerOverlaysNEW(external=false) {
+		var layers = [];
+        if (!external) layers.push(getCatastroOverlay());
+
+	    for (var i=overlays.length-1; i>=0; i--) {
+
+	    	var layer = overlays[i];
+
+	    	var layer_name = null, 
+	    		url = null,
+	    		type = null,
+	    		projection = null,
+	    		version = null,
+	    		transparent = null;
+
+	    	if (!external && !layer.external) {
+
+	    		console.log(layer.mapproxy);
+
+	    		// intern server (qgis or mapproxy)
+	    		if (layer.mapproxy) {
+		    		layer_name = layer.mapproxy;	// mapproxy
+		    		url = urlWMS;
+	    		}
+	    		else {
+		    		layer_name = layer.name;	// qgis
+		    		url = urlWMSqgis;
+	    		}
+	    		type = layer.type;
+	    		projection = 'EPSG:3857';
+	    		version = '1.3.0';
+	    		transparent = true;
+	    	}
+	    	else if (external && layer.external) {
+	    		//console.log(external, layer.mapproxy, layer_name, url, layer_name && url);
+	    		// extern server (wms)
+	    		url = layer.wmsUrl;
+	    		layer_name = layer.wmsLayers;
+	    		type = "orto";
+	    		projection = layer.wmsProjection;
+	    		version = '1.1.1';
+	    		transparent = false;
+	    	}
+
+	    	if (layer_name && url) {
+
+				var layerSource = new ol.source.TileWMS({
+					url: 		url,
+					projection: projection,
+					params: {
+								'LAYERS': layer_name,
+								'TRANSPARENT': transparent,
+								'VERSION': version,
+					},
+					serverType: 'qgis',									
+					//gutter: 	256
+				});
+
+	            var newLayer = 
+	            	new ol.layer.Tile({
+	            		title: layer.name,
+	            		qgisname: layer.qgisname,
+	            		mapproxy: layer.mapproxy,
+	            		type: type,
+						source: layerSource,
+						showlegend: layer.showlegend,
+	                    visible: layer.visible,
+		                hidden: layer.hidden,
+		                children: layer.children,
+		                fields: layer.fields,
+		                indentifiable: layer.indentifiable,
+					});
+				layers.push(newLayer);
+				if (layer.name != "") {
+					renderedLayers[layer.name] = newLayer;
+				}
+			}
+		}
+
+		//console.log(renderedLayers);
 
 		return layers;
 	}

@@ -21,6 +21,11 @@ class ControllerIndex{
 
 		$detect 			= new Mobile_Detect();
 		$data['isMobile'] 	= ($detect->isMobile() === true && $detect->isTablet() === false)? '1' : '0';
+
+		// set to POUM by default
+		$data['mapid'] = "ssa_poum";
+		$data['mapname'] = "Planejament urbanístic";
+		$data['title'] = "Planejament";
 			
 		$this->_system->fShow($this->_system->get('skin')."/tpl_home.php",$data);
 		

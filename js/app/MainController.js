@@ -29,6 +29,8 @@ Controller.$inject = [
 			urlWMS,
 			urlWMSqgis,
 			isMobile,
+			mapid,
+			mapname,
 			mouseX,
 			mouseY,
 			zoomTrigger 					= 14,								//zoom level for trigger active layer change
@@ -38,22 +40,24 @@ Controller.$inject = [
             carrersNamesArray = null;
 
 			//$('#info').hide();
-		$scope.initApp	= function(_baseHref,_urlWMS,_urlWMSqgis,_environment,_token,_isMobile){
+		$scope.initApp	= function(_baseHref,_urlWMS,_urlWMSqgis,_environment,_token,_isMobile,_mapid,_mapname){
 		
 			baseHref			= _baseHref;
 			token				= _token;
 			urlWMS				= _urlWMS;
 			urlWMSqgis			= _urlWMSqgis;
 			isMobile			= parseInt(_isMobile);
+			mapid				= _mapid;
+			mapname				= _mapname;
 			//logger service init
 			loggerService.init(_environment);
-			log("init("+_baseHref+","+urlWMS+","+urlWMSqgis+","+_environment+","+_token+","+_isMobile+")");
+			log("init("+_baseHref+","+urlWMS+","+urlWMSqgis+","+_environment+","+_token+","+_isMobile+","+_mapid+","+_mapname+")");
 	
 			// search initialisation
 			placesService.init(baseHref,_token);
 			
 			// map initialisation
-			mapService.init(urlWMS,urlWMSqgis,$scope.backgroundmap,zoomTrigger,placesService);
+			mapService.init(urlWMS,urlWMSqgis,$scope.backgroundmap,zoomTrigger,placesService,mapid,mapname);
 
 			// load carrers
             $.when(
