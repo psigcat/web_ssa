@@ -18,6 +18,7 @@ var raster						= null;		//background raster
 var filename 					= "mapService.js";
 var lastMouseMove				= new Date().getTime()+5000;
 var currentLayer				= null;		//current WMS layer
+var	baseHref 					= null;
 var urlWMS						= null;		//WMS service url
 var urlWMSqgis					= null;		//WMS service url qgis
 var highLightStyle				= null;		//ol.style for highlighted feature
@@ -37,6 +38,7 @@ var qgisSublayerSources 		= {};
 var layerSwitcher;
 var mainBar, subBar, mainToggle, catastroLayer;
 var mapid, mapname;
+var QGIS_PROJECT_FILE;
 
 // list of overlays
 // name: internal name used by mapproxy
@@ -85,13 +87,14 @@ function map_service($http,$rootScope){
 	}
 	
 
-	function init(_urlWMS,_urlWMSqgis,_backgroundMap,_zoomTrigger,_placesService,_mapid,_mapname){
+	function init(_baseHref,_urlWMS,_urlWMSqgis,_backgroundMap,_zoomTrigger,_placesService,_mapid,_mapname){
 		log("init("+_urlWMS+","+_urlWMSqgis+","+backgroundMap+","+_zoomTrigger+")");
 
 		//****************************************************************
     	//***********************      LOAD MAP    ***********************
     	//****************************************************************
 		backgroundMap				= _backgroundMap;
+		baseHref 					= _baseHref;
 		urlWMS						= _urlWMS;
 		urlWMSqgis					= _urlWMSqgis;
 		zoomTrigger					= _zoomTrigger;
@@ -101,6 +104,7 @@ function map_service($http,$rootScope){
 		urlWMSqgis					= _urlWMSqgis;
 		mapid						= _mapid;
 		mapname						= _mapname;
+		QGIS_PROJECT_FILE			= "/home/ubuntu"+baseHref+mapid+".qgs";
 
 		// register projection
 		proj4.defs("EPSG:25831", "+proj=utm +zone=31 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0+units=m +no_defs");
@@ -242,7 +246,8 @@ function map_service($http,$rootScope){
 
 				layerSwitcher = new ol.control.LayerSwitcher({ 
 					target: document.getElementById("layerswitcher"),
-					urlWMSqgis: urlWMSqgis
+					urlWMSqgis: urlWMSqgis,
+					QGIS_PROJECT_FILE: QGIS_PROJECT_FILE
 				});
 			    map.addControl(layerSwitcher);
 			    layerSwitcher.panel.onmouseout = function (e) {
@@ -707,8 +712,6 @@ function map_service($http,$rootScope){
 										$("#infoPanel").show();
 									    $rootScope.$broadcast('featureInfoReceived',url);
 
-										var ruta = 'files/';
-
 										switch (layerName) {
 											case "MUC_2CLAS":
 								    			var html = "<h3>Mapa Urbanístic de Catalunya (classificació)</h3>";
@@ -796,10 +799,12 @@ function map_service($http,$rootScope){
 							}
 						);
 
+						console.log(url);
+
 						if (url) {
 							log("url",url);
 
-							$http.get(url).then(function(response){
+							$http.get(url+"&MAP="+QGIS_PROJECT_FILE).then(function(response){
 
 							    if(response) {
 							    	var xmlDoc = $.parseXML(response.data), 
@@ -815,14 +820,12 @@ function map_service($http,$rootScope){
 													var feature = $(this);
 													var id = feature.find('Attribute[name="id"]').attr('value');
 													
-													//console.log(layerName, id);
+													//console.log(layerName, feature, id);
 
 													if (layerName != undefined && id != undefined) {
 
 														$("#infoPanel").show();
 													    $rootScope.$broadcast('featureInfoReceived',url);
-
-														var ruta = 'files/';
 
 														switch (layerName) {
 															case "Patrimoni":
@@ -1421,7 +1424,7 @@ function map_service($http,$rootScope){
         //var size = /** @type {module:ol/size~Size} */ (map.getSize());
 
     	var extent = map.getView().calculateExtent([width, height]);
-    	var url = urlWMSqgis+'?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetPrint&FORMAT=pdf&TRANSPARENT=true&CRS=EPSG:3857&map0:STYLES=&map0:extent='+extent+'&TEMPLATE='+template+'&DPI=120';
+    	var url = urlWMSqgis+'?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetPrint&FORMAT=pdf&TRANSPARENT=true&CRS=EPSG:3857&map0:STYLES=&map0:extent='+extent+'&TEMPLATE='+template+'&DPI=120&MAP='+QGIS_PROJECT_FILE;
 		$(this).attr("target", "_blank");
         window.open(url);
         return false;
