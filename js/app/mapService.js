@@ -88,7 +88,7 @@ function map_service($http,$rootScope){
 	
 
 	function init(_baseHref,_urlWMS,_urlWMSqgis,_backgroundMap,_zoomTrigger,_placesService,_mapid,_mapname){
-		log("init("+_urlWMS+","+_urlWMSqgis+","+backgroundMap+","+_zoomTrigger+")");
+		log("init("+_baseHref+","+_urlWMS+","+_urlWMSqgis+","+backgroundMap+","+_zoomTrigger+")");
 
 		//****************************************************************
     	//***********************      LOAD MAP    ***********************
@@ -838,7 +838,7 @@ function map_service($http,$rootScope){
 																html += getHtmlP("Codi", codi);
 																html += getHtmlP("Nom", nom);
 																html += getHtmlP("Tipus", desc);
-																html += getHtmlA("Fitxa", "Veure fitxa", norm);
+																html += getHtmlA("Fitxa", "Veure fitxa", norm, layerName);
 																break;	
 
 															case "Masies i cases rurals":
@@ -850,8 +850,8 @@ function map_service($http,$rootScope){
 																
 																html += getHtmlP("Nom", nom);
 																html += getHtmlP("Tipus", desc);
-																html += getHtmlA("Annex", "Veure annex", anne);
-																html += getHtmlA("Normativa", "Veure normativa", norm);
+																html += getHtmlA("Annex", "Veure annex", anne, layerName);
+																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
 																break;
 
 															case "Catàleg - polígons":
@@ -866,9 +866,9 @@ function map_service($http,$rootScope){
 																html += getHtmlP("Codi", codi);
 																html += getHtmlP("Nom", nom);
 																html += getHtmlP("Tipus", desc);
-																html += getHtmlA("Fitxa", "Veure fitxa", fitxa);
+																html += getHtmlA("Fitxa", "Veure fitxa", fitxa, layerName);
 																html += getHtmlP("Codi tipus", cod_tipus);
-																html += getHtmlA("Normativa", "Veure normativa", norm);
+																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
 																break;
 
 															case "Corredors ambientals":
@@ -880,8 +880,8 @@ function map_service($http,$rootScope){
 																var link = feature.find('Attribute[name="Enllaç disposicions generals"]').attr('value');
 																
 																html += getHtmlP("Descripció", desc);
-																html += getHtmlA("Normativa", "Veure normativa", norm);
-																html += getHtmlA("Disposicions generals", "Veure disposicions generals", link);
+																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
+																html += getHtmlA("Disposicions generals", "Veure disposicions generals", link, layerName);
 																break;
 
 															case "Àmbits al SU":
@@ -894,11 +894,11 @@ function map_service($http,$rootScope){
 																var usos = feature.find('Attribute[name="Enllaç usos generals"]').attr('value');
 
 																html += getHtmlP("Nom", nom);
-																html += getHtmlA("Normativa", "Veure normativa", norm);
-																html += getHtmlA("Clau associada", "Veure clau associada", clau);
-																html += getHtmlA("Disposicions generals", "Veure disposicions generals", generals);
-																html += getHtmlA("Disposicions específiques", "Veure disposicions específiques", especific);
-																html += getHtmlA("Usos", "Veure usos", usos);														
+																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
+																html += getHtmlA("Clau associada", "Veure clau associada", clau, layerName);
+																html += getHtmlA("Disposicions generals", "Veure disposicions generals", generals, layerName);
+																html += getHtmlA("Disposicions específiques", "Veure disposicions específiques", especific, layerName);
+																html += getHtmlA("Usos", "Veure usos", usos, layerName);														
 																break;
 
 															case "Zones SU":
@@ -914,12 +914,12 @@ function map_service($http,$rootScope){
 
 																html += getHtmlP("Descripció", desc);
 																html += getHtmlP("Clau", clau);
-																html += getHtmlA("Clau", "Veure clau", link);
-																html += getHtmlA("Disposicions comunes", "Veure disposicions comunes", comunes);
-																html += getHtmlA("Disposicions específiques", "Veure disposicions específiques", especific);
-																html += getHtmlA("Taula usos", "Veure taula usos", taul);
-																html += getHtmlA("Usos", "Veure usos generals", usos);
-																html += getHtmlA("Aparcament", "Veure ús aparcament", us);
+																html += getHtmlA("Clau", "Veure clau", link, layerName);
+																html += getHtmlA("Disposicions comunes", "Veure disposicions comunes", comunes, layerName);
+																html += getHtmlA("Disposicions específiques", "Veure disposicions específiques", especific, layerName);
+																html += getHtmlA("Taula usos", "Veure taula usos", taul, layerName);
+																html += getHtmlA("Usos", "Veure usos generals", usos, layerName);
+																html += getHtmlA("Aparcament", "Veure ús aparcament", us, layerName);
 																break;
 
 															case "Desenvolupament":
@@ -934,9 +934,9 @@ function map_service($http,$rootScope){
 																html += getHtmlP("Nom", nom);
 																html += getHtmlP("Desenvolupament", dese);
 																html += getHtmlP("PAU", pau);
-																html += getHtmlA("Normativa", "Veure normativa", norm);
-																html += getHtmlA("Disposicions generals", "Veure disposicions generals", disp);
-																html += getHtmlA("Taula", "Veure taula resum", taul);
+																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
+																html += getHtmlA("Disposicions generals", "Veure disposicions generals", disp, layerName);
+																html += getHtmlA("Taula", "Veure taula resum", taul, layerName);
 																break;
 
 															case "Zones SNU":
@@ -948,8 +948,8 @@ function map_service($http,$rootScope){
 
 																html += getHtmlP("Descripció", desc);
 																html += getHtmlP("Clau", clau);
-																html += getHtmlA("Normativa", "Veure normativa", link);
-																html += getHtmlA("Disposicons generals", "Veure disposicons generals", comunes);
+																html += getHtmlA("Normativa", "Veure normativa", link, layerName);
+																html += getHtmlA("Disposicons generals", "Veure disposicons generals", comunes, layerName);
 																break;
 
 															case "Règim del sòl":
@@ -1036,8 +1036,39 @@ function map_service($http,$rootScope){
 			return "";
 	}
 
-	function getHtmlA(label, linktext, link) {
-		var ruta = "files/";
+	function getHtmlA(label, linktext, link, layerName) {
+		var ruta = "files/poum/";
+
+		console.log(layerName, label);
+
+		switch (layerName) {
+			case "Àmbits al SU":
+			case "Zones SU":
+				ruta += "Zones SU/";
+				switch (label) {
+					case "Clau":
+					case "Claus":
+					case "Clau associada":
+						ruta += "Claus/";
+						break;
+					case "Normativa":
+						if (layerName == "Àmbits al SU") {
+							ruta += layerName + "/";
+						}
+						break;
+				}
+				break;
+			case "Zones SNU":
+				ruta += layerName + "/";
+				switch (label) {
+					case "Normativa":
+						ruta += "Claus/";
+				}
+				break;
+			case "Desenvolupament":
+				ruta += layerName + "/";
+				break;
+		}
 
 		if (link && link.indexOf("../") !== -1) 
 			link = link.substring(3);
