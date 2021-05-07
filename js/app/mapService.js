@@ -50,7 +50,7 @@ var overlays = [
 	{name: "ssa_poum_layer_regim_del_sol", title: "Règim del sòl"},
 	{name: "ssa_poum_group_qualificacio", title: "Qualificació", legend: "Zones SU, Desenvolupament, Zones SNU", sublayers: "Zones SU, Desenvolupament, Zones SNU, Clau 9"},
 	{name: "ssa_poum_layer_profunditat_edificable", title: "Condicions d'edificació", legend: "Volumetries (pol), Profunditat edificable", sublayers: "Volumetries (pol)"},
-	{name: "ssa_poum_layer_sectors_-_pau", title: "Sectors - PAU"},
+	/*{name: "ssa_poum_layer_sectors_-_pau", title: "Sectors - PAU"},*/
 	{name: "ssa_poum_layer_ambits_al_su", title: "Àmbits al SU"},
 	{name: "ssa_poum_layer_proteccio_dels_rius", title: "Protecció dels rius"},
 	{name: "ssa_poum_group_ambits_cataleg", title: "Catàleg", sublayers: "Patrimoni, Masies i cases rurals, Catàleg"},
@@ -799,7 +799,7 @@ function map_service($http,$rootScope){
 							}
 						);
 
-						console.log(url);
+						//console.log(url);
 
 						if (url) {
 							log("url",url);
@@ -854,14 +854,14 @@ function map_service($http,$rootScope){
 																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
 																break;
 
-															case "Catàleg - polígons":
+															case "Catàleg":
 												    			var html = "<h3>"+layerName+"</h3>";
 																var codi = feature.find('Attribute[name="Codi"]').attr('value');
-																var nom = feature.find('Attribute[name="nom"]').attr('value');
-																var desc = feature.find('Attribute[name="tipus"]').attr('value');
-																var fitxa = feature.find('Attribute[name="fitxa"]').attr('value');
+																var nom = feature.find('Attribute[name="Nom"]').attr('value');
+																var desc = feature.find('Attribute[name="Tipus"]').attr('value');
+																var fitxa = feature.find('Attribute[name="Enllaç fitxa"]').attr('value');
 																var cod_tipus = feature.find('Attribute[name="cod_tipus"]').attr('value');
-																var norm = feature.find('Attribute[name="normes"]').attr('value');
+																var norm = feature.find('Attribute[name="Enllaç normes"]').attr('value');
 																
 																html += getHtmlP("Codi", codi);
 																html += getHtmlP("Nom", nom);
@@ -1039,7 +1039,7 @@ function map_service($http,$rootScope){
 	function getHtmlA(label, linktext, link, layerName) {
 		var ruta = "files/poum/";
 
-		console.log(layerName, label);
+		//console.log(layerName, label);
 
 		switch (layerName) {
 			case "Àmbits al SU":
@@ -1067,6 +1067,13 @@ function map_service($http,$rootScope){
 				break;
 			case "Desenvolupament":
 				ruta += layerName + "/";
+				break;
+			case "Catàleg":
+				ruta += layerName + "/";
+				switch (label) {
+					case "Fitxa":
+						ruta += "arquitectonic/";
+				}
 				break;
 		}
 
