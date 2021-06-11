@@ -1,0 +1,5 @@
+libs/config.php
+libs/config_sinmapproxy.php
+js/data/*.qgs.json
+files/
+normativas/
