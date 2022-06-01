@@ -3,22 +3,22 @@
 	<head>
 		<title>POUM de Sant Sadurní</title>
 
-        <link rel="apple-touch-icon" sizes="180x180" href="http://mapa.psig.es/ssa/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="http://mapa.psig.es/ssa/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="http://mapa.psig.es/ssa/favicon-16x16.png">
-        <link rel="manifest" href="http://mapa.psig.es/ssa/manifest.json">
-        <link rel="mask-icon" href="http://mapa.psig.es/ssa/safari-pinned-tab.svg" color="#5bbad5">
-        <link rel="shortcut icon" href="http://mapa.psig.es/ssa/favicon.ico">
-        <meta name="msapplication-config" content="http://mapa.psig.es/ssa/browserconfig.xml">
+        <link rel="apple-touch-icon" sizes="180x180" href="https://mapa.psig.es/ssa/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="https://mapa.psig.es/ssa/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="https://mapa.psig.es/ssa/favicon-16x16.png">
+        <link rel="manifest" href="https://mapa.psig.es/ssa/manifest.json">
+        <link rel="mask-icon" href="https://mapa.psig.es/ssa/safari-pinned-tab.svg" color="#5bbad5">
+        <link rel="shortcut icon" href="https://mapa.psig.es/ssa/favicon.ico">
+        <meta name="msapplication-config" content="https://mapa.psig.es/ssa/browserconfig.xml">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.css" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/css/ol.css" type="text/css">
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
         <link rel="stylesheet" href="js/app/ol-layerswitcher.css">
 		<link rel="stylesheet" href="js/libs/font-awesome.min.css">
-        <link rel="stylesheet" href="js/libs/ol-ext.min.css">
+        <link rel="stylesheet" href="https://cdn.rawgit.com/Viglino/ol-ext/master/dist/ol-ext.min.css">
 		<link rel="stylesheet" href="tpl/default/css/custom.css" type="text/css" charset="utf-8">
 		<link rel="stylesheet" href="tpl/default/css/animate.css" type="text/css" charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,7 +51,7 @@
 	            <div class="content">
     	            <p>La documentació disponible en aquest lloc web no té cap valor normatiu. Només serveix de consulta i referència, i conté algunes interpretacions per poder fer la consulta telemàtica. Els únics documents amb valor normatiu són els propis expedients urbanístics aprovats definitivament i sempre i quan no hagin estat subjectes a una sentència ferma emesa per un tribunal de justícia.</p>
                     <p>Els documents oficials, amb validesa normativa es troben a la Direcció General d’Urbanisme de la Generalitat de Catalunya, que disposa de l'original d’aquests documents. També es pot consultar una còpia en PDF en aquest enllaç:</p>
-                    <p><a href="http://ptop.gencat.cat/rpucportal/AppJava/cercaExpedient.do?reqCode=loadSenseCriteris" target="_blank"><img src="tpl/default/img/registre.png"></a> <a href="http://ptop.gencat.cat/rpucportal/AppJava/cercaExpedient.do?reqCode=loadSenseCriteris" target="_blank">Registre del planejament urbanístic de Catalunya</a></p>
+                    <p><a href="https://ptop.gencat.cat/rpucportal/AppJava/cercaExpedient.do?reqCode=loadSenseCriteris" target="_blank"><img src="tpl/default/img/registre.png"></a> <a href="https://ptop.gencat.cat/rpucportal/AppJava/cercaExpedient.do?reqCode=loadSenseCriteris" target="_blank">Registre del planejament urbanístic de Catalunya</a></p>
                     <p>L'Ajuntament disposa, a més, d'una còpia en PDF estructurada del contingut del POUM defintivament aprovat per a la seva consulta en aquest enllaç:</p>
                     <p><a href="#" class="normativa-button"><img src="tpl/default/img/pdf.png"></a> <a href="#" class="normativa-button">Normativa urbanística completa</a></p>
                     <p>Es prohibeix qualsevol reproducció total o parcial si no ha estat expressament autoritzada per l’Ajuntament de Sant Sadurní d'Anoia.</p>
@@ -174,7 +174,7 @@
                 <div class="content">
                     <div class="row">
                         <iframe src="/ssa/normativas/" width="100%" height="575px" frameborder="0"></iframe>
-                        <!--<iframe src="http://mapa.psig.es:8002/normativasSSA" width="100%" height="575px" frameborder="0"></iframe>-->
+                        <!--<iframe src="https://mapa.psig.es:8002/normativasSSA" width="100%" height="575px" frameborder="0"></iframe>-->
                     </div>
                 </div>
             </div>
@@ -390,10 +390,10 @@
     	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     	
     	<!-- Open layers -->
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.js"></script>
-        <script src="js/libs/ol-ext.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/build/ol.js"></script>
+        <script src="https://cdn.rawgit.com/Viglino/ol-ext/master/dist/ol-ext.min.js"></script>
         <script src="js/app/ol-layerswitcher.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
         <script src="https://epsg.io/25831.js"></script>
 
         <!-- angular-bootstrap-ui -->

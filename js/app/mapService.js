@@ -157,7 +157,7 @@ function map_service($http,$rootScope){
 		                    });
 
 		let baseLayerDark = new ol.layer.Tile({
-		                        title: 'OpenStreetMap, estilo Dak Matter (by Carto)',
+		                        title: 'OpenStreetMap, estilo Dark Matter (by Carto)',
 		                        type: 'base',
 		                        visible: false,
 		                        source: new ol.source.XYZ({
@@ -554,11 +554,16 @@ function map_service($http,$rootScope){
 	    	highLightSource.clear();
 	    }
 
+	    // load feature info process, check if all loaded
+	    var itemsProcessed = 0;
+	    var itemsTotal = 0;
+	    var itemsResult = false;
+
 	    Object.keys(qgisSources).forEach(function(key){
 
     		if (renderedLayers[key] && renderedLayers[key].getVisible()) {
 
-    			console.log(renderedLayers[key].get("title"));
+    			//console.log(renderedLayers[key].get("title"));
 
 	    		//console.log(key, source, coordinates);
 
@@ -685,7 +690,7 @@ function map_service($http,$rootScope){
 
 					sources.forEach(function(source, i) {
 
-						console.log(i, coordinates, source.getUrls(), source.getParams(), source.getProperties());
+						//console.log(i, coordinates, source.getUrls(), source.getParams(), source.getProperties());
 
 		    			// layer source
 			    		url = source.getFeatureInfoUrl(
