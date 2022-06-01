@@ -2,12 +2,12 @@
     "name": "",
     "icons": [
         {
-            "src": "http://mapa.psig.es/ssa/android-chrome-192x192.png",
+            "src": "https://mapa.psig.es/ssa/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "http://mapa.psig.es/ssa/android-chrome-256x256.png",
+            "src": "https://mapa.psig.es/ssa/android-chrome-256x256.png",
             "sizes": "256x256",
             "type": "image/png"
         }

@@ -8,7 +8,7 @@ angular.module('app').factory('mapService', map_service);
 
 var map							= null;		//map
 var backgroundMap				= null;		//backgroundMap 1- CartoDB light, 2- CartoDB dark
-var backgroundMapUrl			= 'http://{1-4}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+var backgroundMapUrl			= 'https://{1-4}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
 var customLayer					= null;		//wms layer
 var highLightLayer				= null;		//layer for highlighted town
 var highLightSource				= null;		//source for highlifgted polygon
@@ -39,23 +39,7 @@ var layerSwitcher;
 var mainBar, subBar, mainToggle, catastroLayer;
 var mapid, mapname;
 var QGIS_PROJECT_FILE;
-
-// list of overlays
-// name: internal name used by mapproxy
-// title: visible name, not shown by layerswitcher if empty
-// legend: used to get sub layer legends if not empty
-// sublayers: workaround for https://lists.osgeo.org/pipermail/qgis-developer/2018-July/053924.html
-var overlays = [
-	{name: "ssa_poum_group_carrerer", title: ""},
-	{name: "ssa_poum_layer_regim_del_sol", title: "Règim del sòl"},
-	{name: "ssa_poum_group_qualificacio", title: "Qualificació", legend: "Zones SU, Desenvolupament, Zones SNU", sublayers: "Zones SU, Desenvolupament, Zones SNU, Clau 9"},
-	{name: "ssa_poum_layer_profunditat_edificable", title: "Condicions d'edificació", legend: "Volumetries (pol), Profunditat edificable", sublayers: "Volumetries (pol)"},
-	/*{name: "ssa_poum_layer_sectors_-_pau", title: "Sectors - PAU"},*/
-	{name: "ssa_poum_layer_ambits_al_su", title: "Àmbits al SU"},
-	{name: "ssa_poum_layer_proteccio_dels_rius", title: "Protecció dels rius"},
-	{name: "ssa_poum_group_ambits_cataleg", title: "Catàleg", sublayers: "Patrimoni, Masies i cases rurals, Catàleg"},
-	{name: "ssa_poum_layer_tm_juliol_2006", title: ""}
-];
+var overlays;
 
 // Measure
 // http://openlayers.org/en/latest/examples/measure.html
@@ -85,7 +69,6 @@ function map_service($http,$rootScope){
 			map.updateSize();
 		}
 	}
-	
 
 	function init(_baseHref,_urlWMS,_urlWMSqgis,_backgroundMap,_zoomTrigger,_placesService,_mapid,_mapname){
 		log("init("+_baseHref+","+_urlWMS+","+_urlWMSqgis+","+backgroundMap+","+_zoomTrigger+")");
@@ -105,6 +88,8 @@ function map_service($http,$rootScope){
 		mapid						= _mapid;
 		mapname						= _mapname;
 		QGIS_PROJECT_FILE			= "/home/ubuntu"+baseHref+mapid+".qgs";
+
+		console.log(QGIS_PROJECT_FILE);
 
 		// register projection
 		proj4.defs("EPSG:25831", "+proj=utm +zone=31 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0+units=m +no_defs");
@@ -132,13 +117,6 @@ function map_service($http,$rootScope){
 			matrixIdsBG[z] = "EPSG:4326:" + z;
 		}
 
-		/*var wmsLayerSource = new ol.source.TileWMS({
-								//url: 'http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx',
-					            params: {
-					            	'SRS': 'EPSG:3857'
-					            }
-					        });*/
-
 		let baseLayerNull = new ol.layer.Tile({
 								name: 'baseLayerNull',
 			                    title: 'Cap fons',
@@ -151,8 +129,9 @@ function map_service($http,$rootScope){
 		                        type: 'base',
 		                        visible: false,
 		                        source: new ol.source.TileWMS({
-									url: 'http://geoserveis.icgc.cat/icc_mapesbase/wms/service?',
-						            params: {'LAYERS': 'mtc5m', 'VERSION': '1.1.1'}
+									url: 'https://geoserveis.icgc.cat/icc_mapesbase/wms/service?',
+						            params: {'LAYERS': 'mtc5m', 'VERSION': '1.1.1'},
+						            attributions: 'Institut Cartogràfic i Geològic de Catalunya CC-BY-SA-3'
 						        })
 		                    });
 
@@ -161,7 +140,7 @@ function map_service($http,$rootScope){
 		                        type: 'base',
 		                        visible: false,
 		                        source: new ol.source.WMTS({
-									url: 'http://www.ign.es/wmts/pnoa-ma',
+									url: 'https://www.ign.es/wmts/pnoa-ma',
 					                layer: 'OI.OrthoimageCoverage',
 									matrixSet: 'EPSG:4326',
 									//matrixSet: 'EPSG:3857',
@@ -172,7 +151,8 @@ function map_service($http,$rootScope){
 									  resolutions: resolutionsBG,
 									  matrixIds: matrixIdsBG
 									}),
-									style: 'default'
+									style: 'default',
+						            attributions: 'Institut Cartogràfic i Geològic de Catalunya CC-BY-SA-3'
 							 	})
 		                    });
 
@@ -181,7 +161,8 @@ function map_service($http,$rootScope){
 		                        type: 'base',
 		                        visible: false,
 		                        source: new ol.source.XYZ({
-		                        	url: 'http://{1-4}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
+		                        	url: 'https://{1-4}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+		                        	attributions: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, © <a href="https://carto.com/about-carto/">CARTO</a>',
 		                        })
 		                    });
 
@@ -190,7 +171,8 @@ function map_service($http,$rootScope){
 		                        type: 'base',
 		                        visible: true,
 		                        source: new ol.source.XYZ({
-		                        	url: 'http://{1-4}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+		                        	url: 'https://{1-4}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+		                        	attributions: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, © <a href="https://carto.com/about-carto/">CARTO</a>',
 		                        })
 		                    });
 
@@ -207,8 +189,7 @@ function map_service($http,$rootScope){
             $.getJSON("js/data/"+mapid+".qgs.json", {})   
             .done (function( data ) {
 
-	            //overlays = data;
-	           	//console.log(overlays);
+	            overlays = data;
 
 				//map
 				map = new ol.Map({
@@ -230,15 +211,13 @@ function map_service($http,$rootScope){
 					]
 				});
 
+				map.set("urlWMSqgis", urlWMSqgis);
+				map.set("QGIS_PROJECT_FILE", QGIS_PROJECT_FILE);
+
 		        //map.addLayer(raster);
 		        map.setView(view);
 				viewProjection = view.getProjection();
 				viewResolution = view.getResolution();
-
-				//render WMS layers
-				//renderWMSqgis(layers[0]);
-				//renderWMSqgisLayers(layers);
-				//setActiveLayer('Patrimoni');
 
 				setHighLightStyle();
 				setQgisLayerSources();
@@ -351,43 +330,14 @@ function map_service($http,$rootScope){
         });
 	}
 
-	function getLayerOverlays() {
+	function getLayerOverlays(external=false) {
 		var layers = [];
-        layers.push(getMUC2Overlay());
-        layers.push(getMUCOverlay());
-        layers.push(getCatastroOverlay());
 
-		overlays.forEach(function(layer, i) {
-
-			var layerSource = new ol.source.TileWMS({
-				url: 		urlWMS,
-				params: {
-							'LAYERS': layer.name,
-							'TRANSPARENT': true,
-				},
-				serverType: 'qgis',									
-				//gutter: 	256
-			});
-
-            var newLayer = 
-            	new ol.layer.Tile({
-            		title: layer.title,
-					source: layerSource,
-					legend: layer.legend,
-					sublayers: layer.sublayers
-				});
-			layers.push(newLayer);
-			if (layer.title != "") {
-				renderedLayers[layer.title] = newLayer;
-			}
-        });
-
-		return layers;
-	}
-
-	function getLayerOverlaysNEW(external=false) {
-		var layers = [];
-        if (!external) layers.push(getCatastroOverlay());
+        if (!external) {
+	        layers.push(getMUC2Overlay());
+	        layers.push(getMUCOverlay());
+        	layers.push(getCatastroOverlay());
+		}
 
 	    for (var i=overlays.length-1; i>=0; i--) {
 
@@ -401,8 +351,6 @@ function map_service($http,$rootScope){
 	    		transparent = null;
 
 	    	if (!external && !layer.external) {
-
-	    		console.log(layer.mapproxy);
 
 	    		// intern server (qgis or mapproxy)
 	    		if (layer.mapproxy) {
@@ -443,7 +391,7 @@ function map_service($http,$rootScope){
 					//gutter: 	256
 				});
 
-	            var newLayer = 
+	            let newLayer = 
 	            	new ol.layer.Tile({
 	            		title: layer.name,
 	            		qgisname: layer.qgisname,
@@ -464,8 +412,6 @@ function map_service($http,$rootScope){
 			}
 		}
 
-		//console.log(renderedLayers);
-
 		return layers;
 	}
 
@@ -474,7 +420,7 @@ function map_service($http,$rootScope){
             title: 'Cadastre',
             visible: false,
             source: new ol.source.TileWMS({
-            	url: 'http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx',
+            	url: 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx',
 	            params: {
 	            	'LAYERS': 'catastro', 
 	            	'TILED': true,
@@ -490,7 +436,7 @@ function map_service($http,$rootScope){
 		var layerTitle = 'Mapa Urbanístic de Catalunya (classificació)';
 
 		qgisSources[layerTitle] = new ol.source.TileWMS({
-           	url: 'http://dtes.gencat.cat/webmap/MUC/service.svc/get',
+           	url: 'https://dtes.gencat.cat/webmap/MUC/service.svc/get',
             params: {
             	'LAYERS': 'MUC_2CLAS', 
             	'TILED': true,
@@ -515,7 +461,7 @@ function map_service($http,$rootScope){
 		var layerTitle = 'Mapa Urbanístic de Catalunya (qualificació, sectors)';
 
 		qgisSources[layerTitle] = new ol.source.TileWMS({
-        	url: 'http://dtes.gencat.cat/webmap/MUC/service.svc/get',
+        	url: 'https://dtes.gencat.cat/webmap/MUC/service.svc/get',
             params: {
             	'LAYERS': 'MUC_4QUAL, MUC_3SECT', 
             	'TILED': true,
@@ -539,16 +485,23 @@ function map_service($http,$rootScope){
 	function setQgisLayerSources() {
 		overlays.forEach(function(layer, i) {
 
-			if (layer.title !== "" && 
-				layer.title !== "Protecció dels rius") {	// exclude from GetFeatureInfo
+			if (layer.name != "" && !layer.external) {
+
+				let queryLayers = "";
+		    	if (layer.indentifiable) {
+		    		queryLayers = layer.name;
+		    	}
+
+		    	//console.log("group", layer.indentifiable, layer.name, urlWMSqgis);
             
-	            qgisSources[layer.title] = 
+	            qgisSources[layer.name] = 
 
 					new ol.source.TileWMS({
 						url: 		urlWMSqgis,
 						params: {
-									'LAYERS': layer.title,
+									'LAYERS': layer.name,
 									'TRANSPARENT': true,
+									'QUERY_LAYERS': queryLayers,
 						},
 						serverType: 'qgis'  										
 					});
@@ -560,99 +513,37 @@ function map_service($http,$rootScope){
 	function setQgisSubLayerSources() {
 		overlays.forEach(function(layer, i) {
 
-			if (layer.title != "" && 
-				layer.sublayers !== undefined) {
+			if (layer.name != "" && 
+				layer.hasOwnProperty('children')) {
 
-				var sublayers = layer.sublayers.split(", ");
+				qgisSublayerSources[layer.name] = [];
 
-				qgisSublayerSources[layer.title] = [];
+				layer.children.forEach(function(sublayer, i) {
 
-				sublayers.forEach(function(sublayer, i) {
-            
-		            var source = new ol.source.TileWMS({
-						url: 		urlWMSqgis,
-						params: {
-									'LAYERS': sublayer,
-									'TRANSPARENT': true,
-						},
-						serverType: 'qgis'  										
-					});
-					qgisSublayerSources[layer.title].push(source);
+					if (sublayer.indentifiable) {
+
+			    		//console.log("subgroup", layer.name, sublayer.name);
+
+			            var source = new ol.source.TileWMS({
+							url: 		urlWMSqgis,
+							params: {
+										'LAYERS': sublayer.name,
+										'TRANSPARENT': true,
+										'QUERY_LAYERS': sublayer.name,
+							},
+							serverType: 'qgis'  										
+						});
+						qgisSublayerSources[layer.name].push(source);
+					}
 				});
 			}
         });
 	}
 
-	function getActiveLayer() {
-		activeLayer = new ol.layer.Tile({
-	            		title: layer,
-						source: new ol.source.TileWMS({
-							url: 		urlWMS,
-							//crossOrigin: 'anonymous',
-							params: {
-										'LAYERS'		: 'Patrimoni',
-										'TRANSPARENT': true,
-										//'TILED': true
-							},
-							serverType: 'qgis'  										
-						})
-					});
-		//map.addLayer(activeLayer);
-	}
-
-	/* render grouped layers */
-	function renderWMSqgisLayers(renderlayers) {
-		/*renderlayers.forEach(function(layer, i) {
-			if (Array.isArray(layer)) {
-	    		renderWMSqgisLayers(layer);
-			} else {
-				renderWMSqgis(layer);
-			}
-    	});*/
-
-    	//render backwards
-    	for (var i=renderlayers.length-1; i>=0; i--) {
-    		if (Array.isArray(renderlayers[i])) {
-	    		renderWMSqgisLayers(renderlayers[i]);
-			} else {
-				renderWMSqgis(renderlayers[i]);
-			}
-    	}
-	}
-		    
-	/* qgis server render */
-	function renderWMSqgis(layer){
-		log("renderWMSqgis("+layer+")");
-		if(currentLayer){
-			map.removeLayer(customLayer);
-		}
-		currentLayer		= layer;
-		var newLayer 		= new ol.layer.Tile({
-								source: new ol.source.TileWMS({
-										url: 		urlWMS,
-										//crossOrigin: 'anonymous',
-										params: {
-													'LAYERS'		: layer,
-													'TRANSPARENT': true,
-													//'TILED': true
-										},
-										serverType: 'qgis'  										
-								})
-    						});
-		map.addLayer(newLayer);
-		renderedLayers[layer] = newLayer;
-	}
-
-
-	function setActiveLayer(layerName){
-		log("setActiveLayer("+layerName+")");
-		activeLayer = renderedLayers[layerName];
-	}
-
 	/* select feature info */
 	function selectFeatureInfo(coordinates){
 
-		//log("selectFeature()", coordinates);
+		log("selectFeature()", coordinates);
 
 		//empty infoPanel
 		$('#infoPanel .content').empty();
@@ -663,12 +554,11 @@ function map_service($http,$rootScope){
 	    	highLightSource.clear();
 	    }
 
-	    //console.log(qgisSources);
-
-	    //Object.keys(renderedLayers).forEach(function(key){
 	    Object.keys(qgisSources).forEach(function(key){
 
-    		if (renderedLayers[key].getVisible()) {
+    		if (renderedLayers[key] && renderedLayers[key].getVisible()) {
+
+    			console.log(renderedLayers[key].get("title"));
 
 	    		//console.log(key, source, coordinates);
 
@@ -769,219 +659,127 @@ function map_service($http,$rootScope){
 				}
 
 				else {
-					// request to qgis server on localhost
-
-		    		var sources;
+		    		// request to qgis server on localhost
+		    		var sources = [];
 		    		var url = "";
+		    		var infoLayers = {};
 
 		    		// get sublayers instead of layers GetFeatureInfo
-		    		var sublayers = renderedLayers[key].get("sublayers");
+		    		var sublayers = renderedLayers[key].get("children");
+		    		//console.log(key, renderedLayers[key], sublayers);
+
 		    		if (sublayers !== undefined) {
 						//console.log(key, " -> GetFeatureInfo for sublayers: ", sublayers);
 		    			sources = qgisSublayerSources[key];
+		    			//console.log(sources);
+
+		    			sublayers.forEach(function(sublayer) {
+		    				infoLayers[sublayer.name] = sublayer["fields"];
+		    			});
 		    		}
-		    		else {
-						//console.log(key, " -> GetFeatureInfo for layer: ", key, qgisSources[key]);
+		    		else if (renderedLayers[key].get("indentifiable")) {
 		    			sources = [qgisSources[key]];
+		    			infoLayers[key] = renderedLayers[key].get("fields");
 					}
+	    			//console.log("infoLayers", sources, infoLayers);
 
 					sources.forEach(function(source, i) {
 
+						console.log(i, coordinates, source.getUrls(), source.getParams(), source.getProperties());
+
 		    			// layer source
-			    		url = source.getGetFeatureInfoUrl(
-							coordinates, map.getView().getResolution(), viewProjection,
+			    		url = source.getFeatureInfoUrl(
+							coordinates, map.getView().getResolution(), map.getView().getProjection(),
 							{
 								'INFO_FORMAT': 'text/xml', 
 								'FEATURE_COUNT': 100,
-								//'FI_LINE_TOLERANCE': 0,
-								//'FI_POINT_TOLERANCE': 0,
-								//'FI_POLYGON_TOLERANCE': 0
+								'FI_LINE_TOLERANCE': 10,
+								'FI_POINT_TOLERANCE': 10,
+								'FI_POLYGON_TOLERANCE': 0,
+
 							}
 						);
 
-						//console.log(url);
-
 						if (url) {
-							log("url",url);
+							log("url", url);
+							itemsTotal++;
 
 							$http.get(url+"&MAP="+QGIS_PROJECT_FILE).then(function(response){
 
-							    if(response) {
+								if(response) {
+
 							    	var xmlDoc = $.parseXML(response.data), 
 										$xml = $(xmlDoc);
+
+									itemsProcessed++;
 									
 									$($xml.find('Layer')).each(function(){
+
 										if ($(this).children().length > 0) {
-											var layer = $(this);
-											var layerName = layer.attr('name');
+											let layer = $(this);
+											let layerName = layer.attr('name');
+
+											//console.log(layerName);
 											
 											$(layer.find('Feature')).each(function(){
+
 												if ($(this).children().length > 0) {
-													var feature = $(this);
-													var id = feature.find('Attribute[name="id"]').attr('value');
-													
-													//console.log(layerName, feature, id);
+
+													itemsResult = true;
+
+													let feature = $(this);
+													let id = feature.find('Attribute[name="id"]').attr('value');
+													if (id == undefined && layerName == "Activitats") 
+														id = feature.find('Attribute[name="id_activitat"]').attr('value');
 
 													if (layerName != undefined && id != undefined) {
 
-														$("#infoPanel").show();
 													    $rootScope.$broadcast('featureInfoReceived',url);
 
-														switch (layerName) {
-															case "Patrimoni":
-																var html = "<h3>Elements de patrimoni</h3>";
-																var codi = feature.find('Attribute[name="Codi"]').attr('value');
-																var nom = feature.find('Attribute[name="Nom"]').attr('value');
-																var desc = feature.find('Attribute[name="Tipus"]').attr('value');
-																var norm = feature.find('Attribute[name="Enllaç fitxa"]').attr('value');
-																
-																html += getHtmlP("Codi", codi);
-																html += getHtmlP("Nom", nom);
-																html += getHtmlP("Tipus", desc);
-																html += getHtmlA("Fitxa", "Veure fitxa", norm, layerName);
-																break;	
+														let ruta = 'files/';
 
-															case "Masies i cases rurals":
-																var html = "<h3>Qualificacions: "+layerName+"</h3>";
-																var nom = feature.find('Attribute[name="Nom"]').attr('value');
-																var desc = feature.find('Attribute[name="Tipus"]').attr('value');
-																var anne = feature.find('Attribute[name="Enllaç annex"]').attr('value');
-																var norm = feature.find('Attribute[name="Enllaç normes"]').attr('value');
-																
-																html += getHtmlP("Nom", nom);
-																html += getHtmlP("Tipus", desc);
-																html += getHtmlA("Annex", "Veure annex", anne, layerName);
-																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
-																break;
-
-															case "Catàleg":
-												    			var html = "<h3>"+layerName+"</h3>";
-																var codi = feature.find('Attribute[name="Codi"]').attr('value');
-																var nom = feature.find('Attribute[name="Nom"]').attr('value');
-																var desc = feature.find('Attribute[name="Tipus"]').attr('value');
-																var fitxa = feature.find('Attribute[name="Enllaç fitxa"]').attr('value');
-																var cod_tipus = feature.find('Attribute[name="cod_tipus"]').attr('value');
-																var norm = feature.find('Attribute[name="Enllaç normes"]').attr('value');
-																
-																html += getHtmlP("Codi", codi);
-																html += getHtmlP("Nom", nom);
-																html += getHtmlP("Tipus", desc);
-																html += getHtmlA("Fitxa", "Veure fitxa", fitxa, layerName);
-																html += getHtmlP("Codi tipus", cod_tipus);
-																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
-																break;
-
-															case "Corredors ambientals":
-															case "Protecció dels rius":
-															case "Aqüifers d'interès":
-												    			var html = "<h3>"+layerName+"</h3>";
-																var desc = feature.find('Attribute[name="Descripció"]').attr('value');
-																var norm = feature.find('Attribute[name="Enllaç normes"]').attr('value');
-																var link = feature.find('Attribute[name="Enllaç disposicions generals"]').attr('value');
-																
-																html += getHtmlP("Descripció", desc);
-																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
-																html += getHtmlA("Disposicions generals", "Veure disposicions generals", link, layerName);
-																break;
-
-															case "Àmbits al SU":
-												    			var html = "<h3>Àmbits</h3>";
-																var nom = feature.find('Attribute[name="Nom"]').attr('value');
-																var norm = feature.find('Attribute[name="Enllaç normes"]').attr('value');
-																var clau = feature.find('Attribute[name="Enllaç clau associada"]').attr('value');
-																var generals = feature.find('Attribute[name="Enllaç disposicions comunes"]').attr('value');
-																var especific = feature.find('Attribute[name="Enllaç disposicions específiques"]').attr('value');
-																var usos = feature.find('Attribute[name="Enllaç usos generals"]').attr('value');
-
-																html += getHtmlP("Nom", nom);
-																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
-																html += getHtmlA("Clau associada", "Veure clau associada", clau, layerName);
-																html += getHtmlA("Disposicions generals", "Veure disposicions generals", generals, layerName);
-																html += getHtmlA("Disposicions específiques", "Veure disposicions específiques", especific, layerName);
-																html += getHtmlA("Usos", "Veure usos", usos, layerName);														
-																break;
-
-															case "Zones SU":
-																var html = "<h3>Qualificacions: "+layerName+"</h3>";
-																var desc = feature.find('Attribute[name="Descripció"]').attr('value');
-																var clau = feature.find('Attribute[name="Clau urbanística"]').attr('value');
-																var link = feature.find('Attribute[name="Enllaç clau"]').attr('value');
-																var comunes = feature.find('Attribute[name="Enllaç disposicions comunes"]').attr('value');
-																var especific = feature.find('Attribute[name="Enllaç disposicions específiques"]').attr('value');
-																var taul = feature.find('Attribute[name="Enllaç taula usos"]').attr('value');
-																var usos = feature.find('Attribute[name="Enllaç usos generals"]').attr('value');
-																var us = feature.find('Attribute[name="Enllaç us"]').attr('value');
-
-																html += getHtmlP("Descripció", desc);
-																html += getHtmlP("Clau", clau);
-																html += getHtmlA("Clau", "Veure clau", link, layerName);
-																html += getHtmlA("Disposicions comunes", "Veure disposicions comunes", comunes, layerName);
-																html += getHtmlA("Disposicions específiques", "Veure disposicions específiques", especific, layerName);
-																html += getHtmlA("Taula usos", "Veure taula usos", taul, layerName);
-																html += getHtmlA("Usos", "Veure usos generals", usos, layerName);
-																html += getHtmlA("Aparcament", "Veure ús aparcament", us, layerName);
-																break;
-
-															case "Desenvolupament":
-																var html = "<h3>Sectors</h3>";
-																var nom = feature.find('Attribute[name="Nom"]').attr('value');
-																var dese = feature.find('Attribute[name="Desenvolupament"]').attr('value');
-																var pau = feature.find('Attribute[name="PAU"]').attr('value');
-																var norm = feature.find('Attribute[name="Enllaç criteris ordenació"]').attr('value');
-																var disp = feature.find('Attribute[name="Enllaç disposició general"]').attr('value');
-																var taul = feature.find('Attribute[name="Enllaç taula"]').attr('value');
-
-																html += getHtmlP("Nom", nom);
-																html += getHtmlP("Desenvolupament", dese);
-																html += getHtmlP("PAU", pau);
-																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
-																html += getHtmlA("Disposicions generals", "Veure disposicions generals", disp, layerName);
-																html += getHtmlA("Taula", "Veure taula resum", taul, layerName);
-																break;
-
-															case "Zones SNU":
-																var html = "<h3>Qualificacions: "+layerName+"</h3>";
-																var desc = feature.find('Attribute[name="Descripció"]').attr('value');
-																var clau = feature.find('Attribute[name="Clau"]').attr('value');
-																var link = feature.find('Attribute[name="Enllaç clau"]').attr('value');
-																var comunes = feature.find('Attribute[name="Enllaç disposicions comunes"]').attr('value');
-
-																html += getHtmlP("Descripció", desc);
-																html += getHtmlP("Clau", clau);
-																html += getHtmlA("Normativa", "Veure normativa", link, layerName);
-																html += getHtmlA("Disposicons generals", "Veure disposicons generals", comunes, layerName);
-																break;
-
-															case "Règim del sòl":
-												    			var html = "<h3>"+layerName+"</h3>";
-																var desc = feature.find('Attribute[name="descripcio"]').attr('value');
-
-																html += getHtmlP("Descripció", desc);
-																break;
-
-															case "Volumetries (pol)":
-												    			var html = "<h3>Condicions d'edificació</h3>";
-																var desc = feature.find('Attribute[name="alcada"]').attr('value');
-																var pe = feature.find('Attribute[name="pe"]').attr('value');
-
-																html += getHtmlP("Alçada edificable", desc);
-																html += getHtmlP("Profunditat edificable (m)", pe);
-																break;
-
-															default:
-																console.log("no info for layer", layerName);
+														if (layerName.startsWith("@")) {
+															layerName = layerName.substring(2);
 														}
+														let html = "<h3>"+layerName+"</h3>";
 
-														// for testing only: link to full info
-													    //html += '<a target="_blank" href="' + url + '">.</a>';
+														let l = source.getParams()['LAYERS'];
 
-														$('#infoPanel .content').append(html);
+														if (infoLayers[l] != undefined) {
+
+															infoLayers[l].forEach(function(field){
+																let value = feature.find('Attribute[name="'+field.name+'"]').attr('value');
+
+																if (value.startsWith("../links/")) {
+																	html += getHtmlA(field.name, "Veure fitxa", value);
+																}
+																else if (value.startsWith("http")) {
+																	html += getHtmlAblank(field.name, "Veure fitxa", value);
+																}
+																else {
+																	html += getHtmlP(field.name, value);
+																}
+															});
+
+															// for testing only: link to full info
+														    //html += '<a target="_blank" href="' + url + '">.</a>';
+
+														    $('#infoPanel .content').append(html);
+														}
 													}
 												}
 											});
 										}
 									});
 								}
+
+							    if(itemsProcessed === itemsTotal) {
+							    	$('#loading').removeClass('spinner');
+
+							    	if (!itemsResult) {
+										$('#infoPanel .content').append("<strong>No s'ha trobat cap informació</strong>");
+							    	}
+							    }
 							});
 						}
 					});
@@ -1213,7 +1011,7 @@ function map_service($http,$rootScope){
 				controls:
 				[	new ol.control.Toggle(
 						{	//html:'<i class="fa fa-arrows-h"></i>', 
-							html: '<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0 -8)"><path d="m1.5000001 20.5h21v7h-21z" style="overflow:visible;fill:#c7c7c7;fill-rule:evenodd;stroke:#5b5b5c;stroke-width:.99999994;stroke-linecap:square"/><path d="m4.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m7.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m10.5 20v6" fill="none" stroke="#5b5b5c"/><path d="m13.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m16.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m19.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m2.5 13v4" fill="none" stroke="#415a75"/><path d="m21.5 13v4" fill="none" stroke="#415a75"/><path d="m2 15h20" fill="none" stroke="#415a75" stroke-width="1.99999988"/></g></svg>',
+							html: '<svg height="24" viewBox="0 0 24 24" width="24" xmlns="https://www.w3.org/2000/svg"><g transform="translate(0 -8)"><path d="m1.5000001 20.5h21v7h-21z" style="overflow:visible;fill:#c7c7c7;fill-rule:evenodd;stroke:#5b5b5c;stroke-width:.99999994;stroke-linecap:square"/><path d="m4.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m7.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m10.5 20v6" fill="none" stroke="#5b5b5c"/><path d="m13.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m16.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m19.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m2.5 13v4" fill="none" stroke="#415a75"/><path d="m21.5 13v4" fill="none" stroke="#415a75"/><path d="m2 15h20" fill="none" stroke="#415a75" stroke-width="1.99999988"/></g></svg>',
 							//autoActivate: true,
 							onToggle: function(b) { 
 								//console.log("Button 1 "+(b?"activated":"deactivated")); 
@@ -1223,7 +1021,7 @@ function map_service($http,$rootScope){
 						}),
 					new ol.control.Toggle(
 						{	//html:'<i class="fa fa-arrows-alt"></i>', 
-							html: '<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0 -8)"><path d="m1.5000001 20.5h21v7h-21z" style="overflow:visible;fill:#c7c7c7;fill-rule:evenodd;stroke:#5b5b5c;stroke-width:.99999994;stroke-linecap:square"/><path d="m4.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m7.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m10.5 20v6" fill="none" stroke="#5b5b5c"/><path d="m13.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m16.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m19.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m2.5 9.5h5v2h14v7.5h-6.5v-5h-5v3.5h-7.5z" fill="#6d97c4" fill-rule="evenodd" stroke="#415a75"/></g></svg>',
+							html: '<svg height="24" viewBox="0 0 24 24" width="24" xmlns="https://www.w3.org/2000/svg"><g transform="translate(0 -8)"><path d="m1.5000001 20.5h21v7h-21z" style="overflow:visible;fill:#c7c7c7;fill-rule:evenodd;stroke:#5b5b5c;stroke-width:.99999994;stroke-linecap:square"/><path d="m4.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m7.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m10.5 20v6" fill="none" stroke="#5b5b5c"/><path d="m13.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m16.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m19.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m2.5 9.5h5v2h14v7.5h-6.5v-5h-5v3.5h-7.5z" fill="#6d97c4" fill-rule="evenodd" stroke="#415a75"/></g></svg>',
 							onToggle: function(b) { 
 								//console.log("Button 2 "+(b?"activated":"deactivated")); 
 								measureActive = b;
@@ -1475,8 +1273,7 @@ function map_service($http,$rootScope){
 								zoomToCoord		: zoomToCoord,
 								highlightPoligon: highlightPoligon,
 								resize			: resize,
-								setVisibleLayer	: setVisibleLayer,
-								renderWMS		: renderWMSqgis
+								setVisibleLayer	: setVisibleLayer
 						};
 	return returnFactory;
 }

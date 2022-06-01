@@ -193,6 +193,9 @@ div.table-list ul li.shoe .custom-badge {
   bottom: .5em;
   top: initial;
 }
+.ol-attribution ul {
+  font-size: 1rem;
+}
 .window {
   font-size: 13px;
   background-color: white;

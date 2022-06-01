@@ -1,6 +1,6 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('ol/control/control'), require('ol/observable')) :
-	typeof define === 'function' && define.amd ? define(['ol/control/control', 'ol/observable'], factory) :
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('ol/control/Control'), require('ol/Observable')) :
+	typeof define === 'function' && define.amd ? define(['ol/control/Control', 'ol/Observable'], factory) :
 	(global.LayerSwitcher = factory(global.ol.control.Control,global.ol.Observable));
 }(this, (function (Control,Observable) { 'use strict';
 
@@ -122,9 +122,6 @@ var LayerSwitcher = function (_Control) {
 
         _this.mapListeners = [];
 
-        _this.urlWMSqgis = options.urlWMSqgis;
-        _this.QGIS_PROJECT_FILE = options.QGIS_PROJECT_FILE;
-
         _this.hiddenClassName = 'ol-unselectable ol-control layer-switcher';
         if (LayerSwitcher.isTouchDevice_()) {
             _this.hiddenClassName += ' touch';
@@ -143,23 +140,6 @@ var LayerSwitcher = function (_Control) {
         LayerSwitcher.enableTouchScroll_(_this.panel);
 
         var this_ = _this;
-
-        button.onmouseover = function (e) {
-            this_.showPanel();
-        };
-
-        button.onclick = function (e) {
-            e = e || window.event;
-            this_.showPanel();
-            e.preventDefault();
-        };
-
-        this_.panel.onmouseout = function (e) {
-            e = e || window.event;
-            if (!this_.panel.contains(e.toElement || e.relatedTarget)) {
-                this_.hidePanel();
-            }
-        };
 
         return _this;
     }
@@ -182,10 +162,9 @@ var LayerSwitcher = function (_Control) {
             get(LayerSwitcher.prototype.__proto__ || Object.getPrototypeOf(LayerSwitcher.prototype), 'setMap', this).call(this, map);
             if (map) {
                 var this_ = this;
-                this.mapListeners.push(map.on('pointerdown', function () {
-                    //maintain panel open by default
-                    //this_.hidePanel();
-                }));
+                /*this.mapListeners.push(map.on('pointerdown', function () {
+                    this_.hidePanel();
+                }));*/
                 this.renderPanel();
             }
         }
@@ -222,52 +201,66 @@ var LayerSwitcher = function (_Control) {
     }, {
         key: 'renderPanel',
         value: function renderPanel() {
-
-            this.ensureTopVisibleBaseLayerShown_();
-
-            while (this.panel.firstChild) {
-                this.panel.removeChild(this.panel.firstChild);
-            }
-
-            var ul = document.createElement('ul');
-            this.panel.appendChild(ul);
-            this.renderLayers_(this.getMap(), ul);
+            LayerSwitcher.renderPanel(this.getMap(), this.panel);
         }
 
         /**
-        * Ensure only the top-most base layer is visible if more than one is visible.
+        * **Static** Re-draw the layer panel to represent the current state of the layers.
+        * @param {ol.Map} map The OpenLayers Map instance to render layers for
+        * @param {Element} panel The DOM Element into which the layer tree will be rendered
+        */
+
+    }], [{
+        key: 'renderPanel',
+        value: function renderPanel(map, panel) {
+
+            LayerSwitcher.ensureTopVisibleBaseLayerShown_(map);
+
+            while (panel.firstChild) {
+                panel.removeChild(panel.firstChild);
+            }
+
+            var ul = document.createElement('ul');
+            panel.appendChild(ul);
+            // passing two map arguments instead of lyr as we're passing the map as the root of the layers tree
+            LayerSwitcher.renderLayers_(map, map, ul);
+        }
+
+        /**
+        * **Static** Ensure only the top-most base layer is visible if more than one is visible.
+        * @param {ol.Map} map The map instance.
         * @private
         */
 
     }, {
         key: 'ensureTopVisibleBaseLayerShown_',
-        value: function ensureTopVisibleBaseLayerShown_() {
+        value: function ensureTopVisibleBaseLayerShown_(map) {
             var lastVisibleBaseLyr;
-            LayerSwitcher.forEachRecursive(this.getMap(), function (l, idx, a) {
+            LayerSwitcher.forEachRecursive(map, function (l, idx, a) {
                 if (l.get('type') === 'base' && l.getVisible()) {
                     lastVisibleBaseLyr = l;
                 }
             });
-            if (lastVisibleBaseLyr) this.setVisible_(lastVisibleBaseLyr, true);
+            if (lastVisibleBaseLyr) LayerSwitcher.setVisible_(map, lastVisibleBaseLyr, true);
         }
 
         /**
-        * Toggle the visible state of a layer.
+        * **Static** Toggle the visible state of a layer.
         * Takes care of hiding other layers in the same exclusive group if the layer
         * is toggle to visible.
         * @private
+        * @param {ol.Map} map The map instance.
         * @param {ol.layer.Base} The layer whos visibility will be toggled.
         */
 
     }, {
         key: 'setVisible_',
-        value: function setVisible_(lyr, visible) {
-            var map = this.getMap();
+        value: function setVisible_(map, lyr, visible) {
             lyr.setVisible(visible);
-            if (visible && lyr.get('type') === 'base') {
+            if (visible && (lyr.get('type') === 'base' || lyr.get('type') === 'orto')) {
                 // Hide all other base layers regardless of grouping
                 LayerSwitcher.forEachRecursive(map, function (l, idx, a) {
-                    if (l != lyr && l.get('type') === 'base') {
+                    if (l != lyr && ((lyr.get('type') === 'base' && l.get('type') === 'base') || (lyr.get('type') === 'orto' && l.get('type') === 'orto'))) {
                         l.setVisible(false);
                     }
                 });
@@ -275,18 +268,19 @@ var LayerSwitcher = function (_Control) {
         }
 
         /**
-        * Render all layers that are children of a group.
+        * **Static** Render all layers that are children of a group.
         * @private
+        * @param {ol.Map} map The map instance.
         * @param {ol.layer.Base} lyr Layer to be rendered (should have a title property).
         * @param {Number} idx Position in parent group list.
         */
 
     }, {
         key: 'renderLayer_',
-        value: function renderLayer_(lyr, idx) {
+        value: function renderLayer_(map, lyr, idx) {
 
             var this_ = this;
-            
+
             var li = document.createElement('li');
 
             var lyrTitle = lyr.get('title');
@@ -297,25 +291,38 @@ var LayerSwitcher = function (_Control) {
             if (lyr.getLayers && !lyr.get('combine')) {
 
                 li.className = 'group';
+                if (lyr.get('hidden')) {
+                    li.className += ' hidden';
+                }
+                if (!lyr.get('visible')) {
+                    li.className += ' hidden';
+                }
                 label.innerHTML = lyrTitle;
                 li.appendChild(label);
                 var ul = document.createElement('ul');
                 li.appendChild(ul);
 
-                this.renderLayers_(lyr, ul);
+                LayerSwitcher.renderLayers_(map, lyr, ul);
             } else {
+
                 li.className = 'layer';
+                if (lyr.get('hidden')) {
+                    li.className += ' hidden';
+                }
                 var input = document.createElement('input');
                 if (lyr.get('type') === 'base') {
                     input.type = 'radio';
                     input.name = 'base';
+                } else if (lyr.get('type') === 'orto') {
+                    input.type = 'radio';
+                    input.name = 'orto';
                 } else {
                     input.type = 'checkbox';
                 }
                 input.id = lyrId;
                 input.checked = lyr.get('visible');
                 input.onchange = function (e) {
-                    this_.setVisible_(lyr, e.target.checked);
+                    LayerSwitcher.setVisible_(map, lyr, e.target.checked);
                 };
                 li.appendChild(input);
 
@@ -323,37 +330,55 @@ var LayerSwitcher = function (_Control) {
 
                 if (lyr.get('type') === 'base' || lyr.get('type') === 'personal') {
                     label.innerHTML = lyrTitle;
-                } else {
+                } else if (lyr.get('showlegend') !== false) {
                     label.innerHTML = lyrTitle + '<i class="fa fa-caret-down" aria-hidden="true"></i>';
+                } else {
+                    label.innerHTML = lyrTitle;
                 }
 
-                var rsl = this.getMap().getView().getResolution();
+                var rsl = map.getView().getResolution();
                 if (rsl > lyr.getMaxResolution() || rsl < lyr.getMinResolution()) {
                     label.className += ' disabled';
                 }
 
                 li.appendChild(label);
 
-                if (lyr.get('legend') != undefined) {
-                    // use legend of sublayers
-                    li.appendChild(document.createElement('br'));
-                    var sublyrs = lyr.get('legend').split(",");
-                    sublyrs.forEach(function(sublyrTitle) {
-                        var img = document.createElement('img');
-                        img.className = 'legend';
-                        img.src = this_.urlWMSqgis + '?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER='+sublyrTitle.trim()+'&MAP='+this_.QGIS_PROJECT_FILE;
-                         li.appendChild(img);
+                if (lyr.get('children') !== undefined) {
+                    lyr.get('children').forEach(function(sublayer, i) {
+                        if (sublayer.showlegend == true) {
+                            // show legend
+                            var img = document.createElement('img');
+                            img.className = 'legend';
+                            
+                            //if (!sublayer.mapproxy) {
+                                // dynamic from qgis server
+                                img.src = map.get("urlWMSqgis") + '?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER='+sublayer.name+'&FORMAT=image/png&SLD_VERSION=1.1.0&MAP='+map.get("QGIS_PROJECT_FILE");
+                            /*}
+                            else {
+                                // static from directory
+                                img.src = "legend/"+sublayer.mapproxy+'.png';
+                            }*/
+                            
+                            li.appendChild(img);
+                        }
                     });
                 }
-                else if (lyr.get('type') === undefined) {
-                    // not a base layer
+
+                else if (lyr.get('showlegend') !== false || lyr.get('title') === 'Cadastre') {
+                    // show legend
                     var img = document.createElement('img');
                     img.className = 'legend';
                     if (lyr.get('title') === 'Cadastre') {
-                        img.src = 'http://ovc.catastro.meh.es/Cartografia/WMS/simbolos.png?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Catastro&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0';
-                    } else {
-                        img.src = this_.urlWMSqgis + '?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER='+lyrTitle+'&MAP='+this_.QGIS_PROJECT_FILE;
+                        img.src = 'https://ovc.catastro.meh.es/Cartografia/WMS/simbolos.png?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Catastro&FORMAT=image/png&SLD_VERSION=1.1.0';
+                    } 
+                    else /*if (!lyr.get('mapproxy') && lyr.get('mapproxy') !== undefined)*/ {
+                        // dynamic from qgis server
+                        img.src = map.get("urlWMSqgis") + '?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER='+lyrTitle+'&FORMAT=image/png&SLD_VERSION=1.1.0&MAP='+map.get("QGIS_PROJECT_FILE");
                     }
+                    /*else {
+                        // static from directory
+                        img.src = "legend/"+lyr.get('mapproxy')+'.png';
+                    }*/
                     li.appendChild(document.createElement('br'));
                     li.appendChild(img);
                 }
@@ -362,32 +387,22 @@ var LayerSwitcher = function (_Control) {
             return li;
         }
 
-    }, {
-        key: 'makeSafeForCSS_',
-        value: function makeSafeForCSS_(name) {
-            return name.replace(/[^a-z0-9]/g, function(s) {
-                var c = s.charCodeAt(0);
-                if (c == 32) return '-';
-                if (c >= 65 && c <= 90) return '_' + s.toLowerCase();
-                return '__' + ('000' + c.toString(16)).slice(-4);
-            });
-        }
-
         /**
-        * Render all layers that are children of a group.
+        * **Static** Render all layers that are children of a group.
         * @private
+        * @param {ol.Map} map The map instance.
         * @param {ol.layer.Group} lyr Group layer whos children will be rendered.
         * @param {Element} elm DOM element that children will be appended to.
         */
 
     }, {
         key: 'renderLayers_',
-        value: function renderLayers_(lyr, elm) {
+        value: function renderLayers_(map, lyr, elm) {
             var lyrs = lyr.getLayers().getArray().slice().reverse();
             for (var i = 0, l; i < lyrs.length; i++) {
                 l = lyrs[i];
                 if (l.get('title')) {
-                    elm.appendChild(this.renderLayer_(l, i));
+                    elm.appendChild(LayerSwitcher.renderLayer_(map, l, i));
                 }
             }
 
@@ -395,10 +410,13 @@ var LayerSwitcher = function (_Control) {
             $('li.layer i').unbind("click").click(function(){
                 $(this).toggleClass('fa-caret-up');
                 $(this).toggleClass('fa-caret-down');
-                $(this).parent().parent().find('img').toggle();
+                if ($(this).hasClass('fa-caret-down')) {
+                    $(this).parent().parent().find('img').css("display", "none");
+                } else {
+                    $(this).parent().parent().find('img').css("display", "block");
+                }
                 return false;
             });
-
         }
 
         /**
@@ -409,7 +427,7 @@ var LayerSwitcher = function (_Control) {
         * found under `lyr`. The signature for `fn` is the same as `ol.Collection#forEach`
         */
 
-    }], [{
+    }, {
         key: 'forEachRecursive',
         value: function forEachRecursive(lyr, fn) {
             lyr.getLayers().forEach(function (lyr, idx, a) {
