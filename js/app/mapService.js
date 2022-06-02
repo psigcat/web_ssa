@@ -741,7 +741,7 @@ function map_service($http,$rootScope){
 
 													    $rootScope.$broadcast('featureInfoReceived',url);
 
-														let ruta = 'files/';
+														/*let ruta = 'files/';
 
 														if (layerName.startsWith("@")) {
 															layerName = layerName.substring(2);
@@ -770,7 +770,162 @@ function map_service($http,$rootScope){
 														    //html += '<a target="_blank" href="' + url + '">.</a>';
 
 														    $('#infoPanel .content').append(html);
+														}*/
+
+														switch (layerName) {
+															case "Patrimoni":
+																var html = "<h3>Elements de patrimoni</h3>";
+																var codi = feature.find('Attribute[name="Codi"]').attr('value');
+																var nom = feature.find('Attribute[name="Nom"]').attr('value');
+																var desc = feature.find('Attribute[name="Tipus"]').attr('value');
+																var norm = feature.find('Attribute[name="Enllaç fitxa"]').attr('value');
+																
+
+
+
+																html += getHtmlP("Codi", codi);
+																html += getHtmlP("Nom", nom);
+																html += getHtmlP("Tipus", desc);
+																html += getHtmlA("Fitxa", "Veure fitxa", norm, layerName);
+																break;	
+
+															case "Masies i cases rurals":
+																var html = "<h3>Qualificacions: "+layerName+"</h3>";
+																var nom = feature.find('Attribute[name="Nom"]').attr('value');
+																var desc = feature.find('Attribute[name="Tipus"]').attr('value');
+																var anne = feature.find('Attribute[name="Enllaç annex"]').attr('value');
+																var norm = feature.find('Attribute[name="Enllaç normes"]').attr('value');
+																
+																html += getHtmlP("Nom", nom);
+																html += getHtmlP("Tipus", desc);
+																html += getHtmlA("Annex", "Veure annex", anne, layerName);
+																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
+																break;
+
+															case "Catàleg":
+												    			var html = "<h3>"+layerName+"</h3>";
+																var codi = feature.find('Attribute[name="Codi"]').attr('value');
+																var nom = feature.find('Attribute[name="Nom"]').attr('value');
+																var desc = feature.find('Attribute[name="Tipus"]').attr('value');
+																var fitxa = feature.find('Attribute[name="Enllaç fitxa"]').attr('value');
+																var cod_tipus = feature.find('Attribute[name="cod_tipus"]').attr('value');
+																var norm = feature.find('Attribute[name="Enllaç normes"]').attr('value');
+																
+
+																html += getHtmlP("Codi", codi);
+																html += getHtmlP("Nom", nom);
+																html += getHtmlP("Tipus", desc);
+																html += getHtmlA("Fitxa", "Veure fitxa", fitxa, layerName);
+																html += getHtmlP("Codi tipus", cod_tipus);
+																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
+																break;
+
+
+															case "Corredors ambientals":
+															case "Protecció dels rius":
+															case "Aqüifers d'interès":
+												    			var html = "<h3>"+layerName+"</h3>";
+																var desc = feature.find('Attribute[name="Descripció"]').attr('value');
+																var norm = feature.find('Attribute[name="Enllaç normes"]').attr('value');
+																var link = feature.find('Attribute[name="Enllaç disposicions generals"]').attr('value');
+																
+
+																html += getHtmlP("Descripció", desc);
+																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
+																html += getHtmlA("Disposicions generals", "Veure disposicions generals", link, layerName);
+																break;
+
+															case "Àmbits al SU":
+												    			var html = "<h3>Àmbits</h3>";
+																var nom = feature.find('Attribute[name="Nom"]').attr('value');
+																var norm = feature.find('Attribute[name="Enllaç normes"]').attr('value');
+																var clau = feature.find('Attribute[name="Enllaç clau associada"]').attr('value');
+																var generals = feature.find('Attribute[name="Enllaç disposicions comunes"]').attr('value');
+																var especific = feature.find('Attribute[name="Enllaç disposicions específiques"]').attr('value');
+																var usos = feature.find('Attribute[name="Enllaç usos generals"]').attr('value');
+
+																html += getHtmlP("Nom", nom);
+																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
+																html += getHtmlA("Clau associada", "Veure clau associada", clau, layerName);
+																html += getHtmlA("Disposicions generals", "Veure disposicions generals", generals, layerName);
+																html += getHtmlA("Disposicions específiques", "Veure disposicions específiques", especific, layerName);
+																html += getHtmlA("Usos", "Veure usos", usos, layerName);														
+																break;
+
+															case "Zones SU":
+																var html = "<h3>Qualificacions: "+layerName+"</h3>";
+																var desc = feature.find('Attribute[name="Descripció"]').attr('value');
+																var clau = feature.find('Attribute[name="Clau urbanística"]').attr('value');
+																var link = feature.find('Attribute[name="Enllaç clau"]').attr('value');
+																var comunes = feature.find('Attribute[name="Enllaç disposicions comunes"]').attr('value');
+																var especific = feature.find('Attribute[name="Enllaç disposicions específiques"]').attr('value');
+																var taul = feature.find('Attribute[name="Enllaç taula usos"]').attr('value');
+																var usos = feature.find('Attribute[name="Enllaç usos generals"]').attr('value');
+																var us = feature.find('Attribute[name="Enllaç us"]').attr('value');
+
+																html += getHtmlP("Descripció", desc);
+																html += getHtmlP("Clau", clau);
+																html += getHtmlA("Clau", "Veure clau", link, layerName);
+																html += getHtmlA("Disposicions comunes", "Veure disposicions comunes", comunes, layerName);
+																html += getHtmlA("Disposicions específiques", "Veure disposicions específiques", especific, layerName);
+																html += getHtmlA("Taula usos", "Veure taula usos", taul, layerName);
+																html += getHtmlA("Usos", "Veure usos generals", usos, layerName);
+																html += getHtmlA("Aparcament", "Veure ús aparcament", us, layerName);
+																break;
+
+															case "Desenvolupament":
+																var html = "<h3>Sectors</h3>";
+																var nom = feature.find('Attribute[name="Nom"]').attr('value');
+																var dese = feature.find('Attribute[name="Desenvolupament"]').attr('value');
+																var pau = feature.find('Attribute[name="PAU"]').attr('value');
+																var norm = feature.find('Attribute[name="Enllaç criteris ordenació"]').attr('value');
+																var disp = feature.find('Attribute[name="Enllaç disposició general"]').attr('value');
+																var taul = feature.find('Attribute[name="Enllaç taula"]').attr('value');
+
+																html += getHtmlP("Nom", nom);
+																html += getHtmlP("Desenvolupament", dese);
+																html += getHtmlP("PAU", pau);
+																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
+																html += getHtmlA("Disposicions generals", "Veure disposicions generals", disp, layerName);
+																html += getHtmlA("Taula", "Veure taula resum", taul, layerName);
+																break;
+
+															case "Zones SNU":
+																var html = "<h3>Qualificacions: "+layerName+"</h3>";
+																var desc = feature.find('Attribute[name="Descripció"]').attr('value');
+																var clau = feature.find('Attribute[name="Clau"]').attr('value');
+																var link = feature.find('Attribute[name="Enllaç clau"]').attr('value');
+																var comunes = feature.find('Attribute[name="Enllaç disposicions comunes"]').attr('value');
+
+
+
+																html += getHtmlP("Descripció", desc);
+																html += getHtmlP("Clau", clau);
+																html += getHtmlA("Normativa", "Veure normativa", link, layerName);
+																html += getHtmlA("Disposicons generals", "Veure disposicons generals", comunes, layerName);
+																break;
+
+															case "Règim del sòl":
+												    			var html = "<h3>"+layerName+"</h3>";
+																var desc = feature.find('Attribute[name="descripcio"]').attr('value');
+
+																html += getHtmlP("Descripció", desc);
+																break;
+
+															case "Volumetries (pol)":
+												    			var html = "<h3>Condicions d'edificació</h3>";
+																var desc = feature.find('Attribute[name="alcada"]').attr('value');
+																var pe = feature.find('Attribute[name="pe"]').attr('value');
+
+																html += getHtmlP("Alçada edificable", desc);
+																html += getHtmlP("Profunditat edificable (m)", pe);
+																break;
+
+															default:
+																console.log("no info for layer", layerName);
 														}
+
+														$('#infoPanel .content').append(html);
 													}
 												}
 											});
