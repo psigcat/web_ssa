@@ -12,13 +12,13 @@
         <meta name="msapplication-config" content="https://mapa.psig.es/ssa/browserconfig.xml">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/css/ol.css" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@6.15.1/ol.css" type="text/css">
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
         <link rel="stylesheet" href="js/app/ol-layerswitcher.css">
 		<link rel="stylesheet" href="js/libs/font-awesome.min.css">
-        <link rel="stylesheet" href="https://cdn.rawgit.com/Viglino/ol-ext/master/dist/ol-ext.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol-ext@3.2.30/dist/ol-ext.min.css">
 		<link rel="stylesheet" href="tpl/default/css/custom.css" type="text/css" charset="utf-8">
 		<link rel="stylesheet" href="tpl/default/css/animate.css" type="text/css" charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -390,10 +390,10 @@
     	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     	
     	<!-- Open layers -->
-        <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/build/ol.js"></script>
-        <script src="https://cdn.rawgit.com/Viglino/ol-ext/master/dist/ol-ext.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.15.1/build/ol.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/ol-ext@3.2.30/dist/ol-ext.min.js"></script>
         <script src="js/app/ol-layerswitcher.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
         <script src="https://epsg.io/25831.js"></script>
 
         <!-- angular-bootstrap-ui -->
