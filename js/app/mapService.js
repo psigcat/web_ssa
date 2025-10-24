@@ -125,12 +125,15 @@ function map_service($http,$rootScope){
 
 		let baseLayerTopo = new ol.layer.Tile({
 								name: 'baseLayerTopo',
-		                        title: 'Topogràfic 1:5.000 (by ICGC)',
+		                        title: 'Topogràfic 1:25.000 (by ICGC)',
 		                        type: 'base',
 		                        visible: false,
 		                        source: new ol.source.TileWMS({
-									url: 'https://geoserveis.icgc.cat/icc_mapesbase/wms/service?',
-						            params: {'LAYERS': 'mtc5m', 'VERSION': '1.1.1'},
+									url: 'https://geoserveis.icgc.cat/servei/catalunya/topografia-territorial/wmsservice?',
+						            params: {
+						            	'LAYERS': 'topografia-territorial', 
+						            	'VERSION': '1.1.1'
+						            },
 						            attributions: 'Institut Cartogràfic i Geològic de Catalunya CC-BY-SA-3'
 						        })
 		                    });
