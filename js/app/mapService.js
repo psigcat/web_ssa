@@ -1394,6 +1394,7 @@ function map_service($http,$rootScope){
     $(".window.print").on("click", ".format", function(){
     	var clase = $(this).attr('class');
     	var template = "";
+    	var printScale = "";
 		var dims = {
 			a3: [420, 277],
 			a4: [297, 188],
@@ -1403,18 +1404,22 @@ function map_service($http,$rootScope){
 
     	switch(clase) {
     		case "format a4_500": 
-    			template = "DinA4 1:500"; 
+    			template = "DinA4 1:500";
+    			printScale = "500";
     			break;
     		case "format a4_1000": 
     			template = "DinA4 1:1.000"; 
+    			printScale = "1000";
     			break;
     		case "format a3_1000": 
     			template = "DinA3 1:1.000"; 
+    			printScale = "1000";
     			dim = dims["a3"];
     			break;
     		case "format a3_2000": 
     			template = "DinA3 1:2.000"; 
-    			dim = dims["a3"];
+     			printScale = "2000";
+   			dim = dims["a3"];
     			break;
     	}
 
@@ -1423,7 +1428,7 @@ function map_service($http,$rootScope){
         //var size = /** @type {module:ol/size~Size} */ (map.getSize());
 
     	var extent = map.getView().calculateExtent([width, height]);
-    	var url = urlWMSqgis+'?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetPrint&FORMAT=pdf&TRANSPARENT=true&CRS=EPSG:3857&map0:STYLES=&map0:extent='+extent+'&TEMPLATE='+template+'&DPI=120&MAP='+QGIS_PROJECT_FILE;
+    	var url = urlWMSqgis+'?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetPrint&FORMAT=pdf&TRANSPARENT=true&CRS=EPSG:3857&map0:STYLES=&map0:extent='+extent+'&TEMPLATE='+template+'&DPI=120&map0:scale='+printScale+'&MAP='+QGIS_PROJECT_FILE;
 		$(this).attr("target", "_blank");
         window.open(url);
         return false;
