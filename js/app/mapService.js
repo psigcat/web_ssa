@@ -125,7 +125,7 @@ function map_service($http,$rootScope){
 
 		let baseLayerTopo = new ol.layer.Tile({
 								name: 'baseLayerTopo',
-		                        title: 'Topogràfic 1:25.000 (by ICGC)',
+		                        title: 'Topogràfic 1:5.000 (by ICGC)',
 		                        type: 'base',
 		                        visible: false,
 		                        source: new ol.source.TileWMS({
