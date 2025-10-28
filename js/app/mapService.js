@@ -1357,7 +1357,7 @@ function map_service($http,$rootScope){
 	};
 
     var formatLength = function(line) {
-        var length = ol.Sphere.getLength(line);
+        var length = ol.sphere.getLength(line);
         var output;
         if (length > 100) {
           output = (Math.round(length / 1000 * 100) / 100) +
@@ -1370,7 +1370,7 @@ function map_service($http,$rootScope){
     };	
 
     var formatArea = function(polygon) {
-        var area = ol.Sphere.getArea(polygon);
+        var area = ol.sphere.getArea(polygon);
         var output;
         if (area > 10000) {
           output = (Math.round(area / 1000000 * 100) / 100) +
