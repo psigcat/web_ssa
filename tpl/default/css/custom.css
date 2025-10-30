@@ -602,6 +602,10 @@ div.table-list ul li.shoe .custom-badge {
   border-top-color: #ffcc33;
 }
 
+#printSize, #printScale {
+  width: 325px;
+}
+
 /*.layer-switcher li.group:nth-child(1) li.layer:nth-child(1),
 .layer-switcher li.group:nth-child(1) li.layer:nth-last-child(1) {
   display: none;

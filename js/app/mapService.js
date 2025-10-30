@@ -37,6 +37,7 @@ var qgisSources					= {};
 var qgisSublayerSources 		= {};
 var layerSwitcher;
 var mainBar, subBar, mainToggle, catastroLayer;
+var baseLayers;
 var mapid, mapname;
 var QGIS_PROJECT_FILE;
 var overlays;
@@ -54,6 +55,8 @@ var helpMsg = 'Clica per iniciar el dibuix';
 var draw;
 var measureSource;
 var measureActive = false;
+var printSource, printLayer, translatePrintBox, 
+	printTemplate = "DinA4";
 
 map_service.$inject 	= [ 
     '$http',
@@ -179,7 +182,7 @@ function map_service($http,$rootScope){
 		                        })
 		                    });
 
-		var baseLayers = [
+		baseLayers = [
 			baseLayerNull,
 			baseLayerTopo,
 			baseLayerFoto,
@@ -1395,48 +1398,198 @@ function map_service($http,$rootScope){
         return false;
     });*/
 
-    $(".window.print").on("click", ".format", function(){
-    	var clase = $(this).attr('class');
-    	var template = "";
-    	var printScale = "";
-		var dims = {
-			a3: [420, 277],
-			a4: [297, 188],
-		};
-		var dim = dims["a4"];
+        $(".infoPanelLinks .btn-print").on("click", function(){
+        window.frames['printinfo'].focus();
+		window.frames['printinfo'].print();
+    });
+
+	/****************************************/
+	// print
+	/****************************************/
+    $("#menu").on("click", ".reports", function(){
+        cancelPrintBox();
+    });
+    $("#menu").on("click", ".layers", function(){
+        cancelPrintBox();
+    });
+    $("#menu").on("click", ".search", function(){
+        cancelPrintBox();
+    });
+
+    $("#menu").on("click", ".print", function(){
+        //cancelPrintBox();
+        //initPrintBox();
+        selectPrintTemplate();
+    });
+
+    $(".window.print").on("click", "h2 .fa-times", function(){
+        $(this).closest(".window").hide();
+        cancelPrintBox();
+    });
+
+    $(".window.print").on("click", ".btn-cancel", function(){
+        $(this).closest(".window").hide();
+        cancelPrintBox();
+    });
+
+    $(".window.print").on("click", ".btn-print", function(){
+        printPrint();
+    });
+
+    $(".window.print").on("change", "#printSize", function(){
+    	selectPrintTemplate();
+    });
+    $(".window.print").on("change", "#printScale", function(){
+    	selectPrintTemplate();
+    });
+
+	// actual screen scale
+	// https://gis.stackexchange.com/questions/242424/how-to-get-map-units-to-find-current-scale-in-openlayers
+	function screenScale() {
+		var unit = map.getView().getProjection().getUnits();
+		var resolution = map.getView().getResolution();
+		var inchesPerMetre = 39.3700787;
+		var dpi = 96;
+
+		return resolution * ol.proj.Units.METERS_PER_UNIT[unit] * inchesPerMetre * dpi;
+	}
+
+	// print map resolution in m/px
+	// https://gis.stackexchange.com/questions/158435/how-to-get-current-scale-in-openlayers-3#answer-158518
+	function printResolution(scale) {
+		var unit = map.getView().getProjection().getUnits();
+		var inchesPerMetre = 39.3700787;
+		var dpi = 120;
+
+		return scale / (ol.proj.Units.METERS_PER_UNIT[unit] * inchesPerMetre * dpi);
+	}
+
+	function initPrintBox() {
+
+		var size = $("#printSize option:selected").data("dim");
+		var scale = $("#printScale").val(); 
+    	var w = Number(size[0])*printResolution(scale)/screenScale()*18000;
+    	var h = Number(size[1])*printResolution(scale)/screenScale()*18000;
+
+		var bounds = map.getView().calculateExtent([w,h]);
+		var printBox = [
+			[bounds[0], bounds[1]],
+			[bounds[0], bounds[3]],
+			[bounds[2], bounds[3]],
+			[bounds[2], bounds[1]],
+			[bounds[0], bounds[1]]
+		];
+		var printPolygon = new ol.geom.Polygon([printBox]);
+		var printFeature = new ol.Feature(printPolygon);
+
+		/*printFeature.on('change',function(){
+			console.log('Feature Moved To:' + this.getGeometry().getCoordinates());
+		},printFeature);*/
+
+   	    printSource = new ol.source.Vector({wrapX: false});
+		printSource.addFeature(printFeature);
+
+		printLayer = new ol.layer.Vector({
+			source: printSource,
+			zIndex: 1000,
+			style: new ol.style.Style({
+				fill: new ol.style.Fill({
+					color: 'rgba(88,38,123,0.3)' 
+				}),
+				stroke: new ol.style.Stroke({
+					color: 'rgb(88,38,123)',
+					width: 2
+				}),
+				image: new ol.style.Circle({
+					radius: 2,
+					fill: new ol.style.Fill({
+						color: 'rgb(88,38,123)' 
+					})
+				})
+			})
+		});
+		map.addLayer(printLayer);
+
+		// make box draggable
+		translatePrintBox = new ol.interaction.Translate({
+	        features: new ol.Collection([printFeature])
+	    });
+
+		printLayer.setVisible(true);
+		map.addInteraction(translatePrintBox);
+	}
+
+	function cancelPrintBox() {
+		if (printSource) {
+			map.removeInteraction(translatePrintBox);
+			printSource.clear();
+			printLayer.setVisible(false);
+		}
+	}
+
+	function printPrint() {
+		// print selected area
+		$(this).attr("target", "_blank");
+
+    	//var url = urlWMSqgis+'?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetPrint&FORMAT=pdf&TRANSPARENT=true&LAYERS='+mapname+'&CRS=EPSG:3857&map0:STYLES=&map0:extent='+printSource.getExtent()+'&TEMPLATE='+printTemplate+'&DPI=120';
+
+		// get visible layers
+		var visibleLayers = [];
+		Object.keys(renderedLayers).forEach(function(key){
+			
+			if (renderedLayers[key].getVisible()) {
+				//if ((key !== "@ Capes topografiques - gris" && mapid !== "ortofotos_historial") &&
+				if (key !== "@ Capes topografiques - gris" &&
+					key !== "@ Capes topografiques AMB" &&
+					key !== "@ Capes ortofotografiques" &&
+					key !== "@ Catastro") {
+
+					console.log(key, renderedLayers[key].getVisible(), renderedLayers[key].get("qgisname"));
+
+					//visibleLayers.push(key);
+					visibleLayers.push(renderedLayers[key].get("qgisname"));
+				}
+				else if (key === "@ Catastro" && catastroLayer.getVisible()) {
+
+					//console.log(key, catastroLayer.getVisible());
+					visibleLayers.push("@ Catastro");
+				}
+			}
+		});
+
+		baseLayers.forEach(function(layer, i) {
+			if (layer.getVisible() && layer.get("title") !== "Cap fons") {
+            	//console.log(layer.get("qgistitle"));
+				visibleLayers.splice(0, 0, layer.get("qgistitle"));
+            }
+        });
+		//console.log(visibleLayers.toString());
+
+    	var url = urlWMSqgis+'?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetPrint&FORMAT=pdf&TRANSPARENT=true&LAYERS='+visibleLayers.toString()+'&CRS=EPSG:3857&map0:STYLES=&map0:extent='+printSource.getExtent()+'&TEMPLATE='+printTemplate+'&DPI=120&map0:scale='+$("#printScale").val()+"&MAP="+QGIS_PROJECT_FILE;
+
+		console.log(url);
+
+        window.open(url, mapname+" Sant Sadurnì");
+	}
+
+    function selectPrintTemplate() {
+		// select values
+		var paper = $("#printSize").val();
+		var dim = $("#printSize option:selected").data("dim");
+		var scale = parseInt($("#printScale").val());
 		var resolution = 120;
 
-    	switch(clase) {
-    		case "format a4_500": 
-    			template = "DinA4 1:500";
-    			printScale = "500";
-    			break;
-    		case "format a4_1000": 
-    			template = "DinA4 1:1.000"; 
-    			printScale = "1000";
-    			break;
-    		case "format a3_1000": 
-    			template = "DinA3 1:1.000"; 
-    			printScale = "1000";
-    			dim = dims["a3"];
-    			break;
-    		case "format a3_2000": 
-    			template = "DinA3 1:2.000"; 
-     			printScale = "2000";
-   			dim = dims["a3"];
-    			break;
-    	}
+		printTemplate = paper;
 
-		var width = Math.round(dim[0] * resolution / 25.4);
-        var height = Math.round(dim[1] * resolution / 25.4);
-        //var size = /** @type {module:ol/size~Size} */ (map.getSize());
+		console.log(paper, dim, scale, printTemplate);
 
-    	var extent = map.getView().calculateExtent([width, height]);
-    	var url = urlWMSqgis+'?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetPrint&FORMAT=pdf&TRANSPARENT=true&CRS=EPSG:3857&map0:STYLES=&map0:extent='+extent+'&TEMPLATE='+template+'&DPI=120&map0:scale='+printScale+'&MAP='+QGIS_PROJECT_FILE;
-		$(this).attr("target", "_blank");
-        window.open(url);
+		if (printSource) {
+			printSource.clear();
+		}
+    	initPrintBox();
+
         return false;
-    });
+    }
 
     // public API	
 	var returnFactory 	= {

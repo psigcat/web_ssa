@@ -77,16 +77,25 @@
                     <a href="#" class="pull-right"><i class="fa fa-fw fa-times"></i></a>
                 </h2>
                 <div class="content">
-                    <h3>DIN A4</h3>
-                    <ul>
-                        <li><a href="#" class="format a4_500">1:500</a></li>
-                        <li><a href="#" class="format a4_1000">1:1.000</a></li>
-                    </ul>
-                    <h3>DIN A3</h3>
-                    <ul>
-                        <li><a href="#" class="format a3_1000">1:1.000</a></li>
-                        <li><a href="#" class="format a3_2000">1:2.000</a></li>
-                    </ul>
+                    <p>Selecciona el paper i escala d'impressió</p>
+                    <p><select id="printSize" name="printSize">
+                        <option value="DinA4" data-dim="[297,188]">DIN A4</option>
+                        <option value="DinA3" data-dim="[420,275]">DIN A3</option>
+                    </select></p>
+                    <p><select id="printScale" name="printScale">
+                        <option value="200">1:200</option>
+                        <option value="500">1:500</option>
+                        <option value="1000" selected="selected">1:1.000</option>
+                        <option value="2000">1:2.000</option>
+                        <option value="5000">1:5.000</option>
+                        <option value="10000">1:10.000</option>
+                        <option value="25000">1:25.000</option>
+                        <option value="50000">1:50.000</option>
+                    </select></p>
+                    <p>
+                        <button type="button" class="btn btn-default btn-cancel">Cancel</button> 
+                        <button type="button" class="btn btn-default btn-print">Print</button>
+                    </p>
                 </div>
             </div>
             
