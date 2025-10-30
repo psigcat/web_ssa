@@ -254,19 +254,16 @@ function map_service($http,$rootScope){
 					if (measureActive) {
 						pointerMoveHandler(evt);
 					}
-
-					//https://openlayers.org/en/latest/examples/getfeatureinfo-tile.html
-					/*console.log(evt, evt.target);
-
-					if (evt.dragging) {
-					  return;
-					}
-					var pixel = map.getEventPixel(evt.originalEvent);
-					var hit = map.forEachLayerAtPixel(pixel, function() {
-					  return true;
-					});
-					console.log(hit);
-					map.getTargetElement().style.cursor = hit ? 'pointer' : '';*/
+					/*else {
+						// change mouse pointer when hovering
+						if (evt.dragging) {
+							return;
+						}
+						let hit = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+							return true;
+						});
+						map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+					}*/
 				});
 
 				$(document).keyup(function(e) {
@@ -782,9 +779,6 @@ function map_service($http,$rootScope){
 																var nom = feature.find('Attribute[name="Nom"]').attr('value');
 																var desc = feature.find('Attribute[name="Tipus"]').attr('value');
 																var norm = feature.find('Attribute[name="Enllaç fitxa"]').attr('value');
-																
-
-
 
 																html += getHtmlP("Codi", codi);
 																html += getHtmlP("Nom", nom);
@@ -1035,6 +1029,16 @@ function map_service($http,$rootScope){
 					case "Fitxa":
 						ruta += "arquitectonic/";
 				}
+				break;
+			case "Patrimoni":
+				ruta += "Catàleg/";
+				switch (label) {
+					case "Fitxa":
+						ruta += "arqueologic/";
+				}
+				break;
+			case "Masies i cases rurals":
+				ruta += "Catàleg/masies/";
 				break;
 		}
 
