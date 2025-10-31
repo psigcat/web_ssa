@@ -897,8 +897,6 @@ function map_service($http,$rootScope){
 																var link = feature.find('Attribute[name="Enllaç clau"]').attr('value');
 																var comunes = feature.find('Attribute[name="Enllaç disposicions comunes"]').attr('value');
 
-
-
 																html += getHtmlP("Descripció", desc);
 																html += getHtmlP("Clau", clau);
 																html += getHtmlA("Normativa", "Veure normativa", link, layerName);
@@ -919,6 +917,18 @@ function map_service($http,$rootScope){
 
 																html += getHtmlP("Alçada edificable", desc);
 																html += getHtmlP("Profunditat edificable (m)", pe);
+																break;
+
+															case "Ús d'habitatge en planta baixa":
+												    			var html = "<h3>"+layerName+"</h3>";
+																var desc = feature.find('Attribute[name="descripcio"]').attr('value');
+																var img = feature.find('Attribute[name="quadre"]').attr('value');
+																var link = feature.find('Attribute[name="link"]').attr('value');
+																console.log(desc,img,link);
+
+																html += getHtmlP("Descripció", desc);
+																html += getHtmlA("Quadre", "Veure quadre", img, layerName);
+																html += getHtmlA("Normativa", "Veure normativa", link, layerName);
 																break;
 
 															default:
@@ -1042,6 +1052,9 @@ function map_service($http,$rootScope){
 				break;
 			case "Masies i cases rurals":
 				ruta += "Catàleg/masies/";
+				break;
+			case "Ús d'habitatge en planta baixa":
+				ruta += "Zones SU/";
 				break;
 		}
 
