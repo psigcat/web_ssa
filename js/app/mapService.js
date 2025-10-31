@@ -276,7 +276,7 @@ function map_service($http,$rootScope){
 				    	removeHelpTooltip();
 				    	$('.tooltip').addClass('hidden');
 				    	mainToggle.toggle();
-				    	measureSource.clear();
+				    	removeMeasure();
 					}
 				});
 
@@ -1176,59 +1176,59 @@ function map_service($http,$rootScope){
 	
 	function setHighLightStyle(){
 		var _myStroke = new ol.style.Stroke({
-							color : 'rgba(108, 141, 168, 1)',
-							width : 6 
-						});
+			color : 'rgba(108, 141, 168, 1)',
+			width : 6 
+		});
 			
 		highLightStyle = new ol.style.Style({
-							stroke : _myStroke,
-							//fill : _myFill
-						});
+			stroke : _myStroke,
+			//fill : _myFill
+		});
 	}
 
 	// Measure bar
 	function initMeasureBar() {
-		subBar = new ol.control.Bar(
-			{	toggleOne: true,
-				autoDeactivate: true,
-				controls:
-				[	new ol.control.Toggle(
-						{	//html:'<i class="fa fa-arrows-h"></i>', 
-							html: '<svg height="24" viewBox="0 0 24 24" width="24" xmlns="https://www.w3.org/2000/svg"><g transform="translate(0 -8)"><path d="m1.5000001 20.5h21v7h-21z" style="overflow:visible;fill:#c7c7c7;fill-rule:evenodd;stroke:#5b5b5c;stroke-width:.99999994;stroke-linecap:square"/><path d="m4.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m7.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m10.5 20v6" fill="none" stroke="#5b5b5c"/><path d="m13.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m16.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m19.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m2.5 13v4" fill="none" stroke="#415a75"/><path d="m21.5 13v4" fill="none" stroke="#415a75"/><path d="m2 15h20" fill="none" stroke="#415a75" stroke-width="1.99999988"/></g></svg>',
-							//autoActivate: true,
-							onToggle: function(b) { 
-								//console.log("Button 1 "+(b?"activated":"deactivated")); 
-								measureActive = b;
-								enableInteraction(b, true);
-							} 
-						}),
-					new ol.control.Toggle(
-						{	//html:'<i class="fa fa-arrows-alt"></i>', 
-							html: '<svg height="24" viewBox="0 0 24 24" width="24" xmlns="https://www.w3.org/2000/svg"><g transform="translate(0 -8)"><path d="m1.5000001 20.5h21v7h-21z" style="overflow:visible;fill:#c7c7c7;fill-rule:evenodd;stroke:#5b5b5c;stroke-width:.99999994;stroke-linecap:square"/><path d="m4.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m7.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m10.5 20v6" fill="none" stroke="#5b5b5c"/><path d="m13.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m16.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m19.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m2.5 9.5h5v2h14v7.5h-6.5v-5h-5v3.5h-7.5z" fill="#6d97c4" fill-rule="evenodd" stroke="#415a75"/></g></svg>',
-							onToggle: function(b) { 
-								//console.log("Button 2 "+(b?"activated":"deactivated")); 
-								measureActive = b;
-								enableInteraction(b, false);
-							}
-						})
-				]
-			});
-		mainToggle = new ol.control.Toggle(
-						{	html: 'M',
-							bar: subBar,
-							onToggle: function(b) {
-								//console.log("main button "+(b?"activated":"deactivated"))
-								if (!b) {
-									removeMeasure();
-									this.toggle();
-								}
-							}
-						});
-		mainBar = new ol.control.Bar(
-			{	autoDeactivate: true,
-				controls: [mainToggle],
-				className: "ol-bottom ol-left measureBar"
-			});
+		subBar = new ol.control.Bar({
+			toggleOne: true,
+			autoDeactivate: true,
+			controls:[	
+				new ol.control.Toggle({
+					//html:'<i class="fa fa-arrows-h"></i>', 
+					html: '<svg height="24" viewBox="0 0 24 24" width="24" xmlns="https://www.w3.org/2000/svg"><g transform="translate(0 -8)"><path d="m1.5000001 20.5h21v7h-21z" style="overflow:visible;fill:#c7c7c7;fill-rule:evenodd;stroke:#5b5b5c;stroke-width:.99999994;stroke-linecap:square"/><path d="m4.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m7.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m10.5 20v6" fill="none" stroke="#5b5b5c"/><path d="m13.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m16.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m19.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m2.5 13v4" fill="none" stroke="#415a75"/><path d="m21.5 13v4" fill="none" stroke="#415a75"/><path d="m2 15h20" fill="none" stroke="#415a75" stroke-width="1.99999988"/></g></svg>',
+					//autoActivate: true,
+					onToggle: function(b) { 
+						//console.log("Button 1 "+(b?"activated":"deactivated")); 
+						measureActive = b;
+						enableInteraction(b, true);
+					} 
+				}),
+				new ol.control.Toggle({
+					//html:'<i class="fa fa-arrows-alt"></i>', 
+					html: '<svg height="24" viewBox="0 0 24 24" width="24" xmlns="https://www.w3.org/2000/svg"><g transform="translate(0 -8)"><path d="m1.5000001 20.5h21v7h-21z" style="overflow:visible;fill:#c7c7c7;fill-rule:evenodd;stroke:#5b5b5c;stroke-width:.99999994;stroke-linecap:square"/><path d="m4.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m7.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m10.5 20v6" fill="none" stroke="#5b5b5c"/><path d="m13.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m16.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m19.5 21v3" fill="none" stroke="#5b5b5c"/><path d="m2.5 9.5h5v2h14v7.5h-6.5v-5h-5v3.5h-7.5z" fill="#6d97c4" fill-rule="evenodd" stroke="#415a75"/></g></svg>',
+					onToggle: function(b) { 
+						//console.log("Button 2 "+(b?"activated":"deactivated")); 
+						measureActive = b;
+						enableInteraction(b, false);
+					}
+				})
+			]
+		});
+		mainToggle = new ol.control.Toggle({
+			html: 'M',
+			bar: subBar,
+			onToggle: function(b) {
+				//console.log("main button "+(b?"activated":"deactivated"))
+				if (!b) {
+					removeMeasure();
+					this.toggle();
+				}
+			}
+		});
+		mainBar = new ol.control.Bar({
+			autoDeactivate: true,
+			controls: [mainToggle],
+			className: "ol-bottom ol-left measureBar"
+		});
 		map.addControl ( mainBar );
 	}
 
@@ -1236,7 +1236,7 @@ function map_service($http,$rootScope){
 	// Distance and area messurement
 	/****************************************/
     function enableInteraction(enable, distance) {
-    	console.log(enable,measureActive);
+    	//console.log(enable,measureActive);
     	enable ? addInteraction(distance) : removeMeasure();
     }
 
@@ -1316,6 +1316,7 @@ function map_service($http,$rootScope){
     	$('.tooltip').addClass('hidden');
     	mainToggle.toggle();
     	measureSource.clear();
+    	mainBar.setActive(false);
     }
 
 	function createHelpTooltip() {
