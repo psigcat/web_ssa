@@ -776,8 +776,9 @@ function map_service($http,$rootScope){
 														}*/
 
 														switch (layerName) {
-															case "Patrimoni":
-																var html = "<h3>Elements de patrimoni</h3>";
+															case "Patrimoni arqueològic i paleontològic":
+															case "Patrimoni arquitectònic":
+																var html = "<h3>Elements de "+layerName+"</h3>";
 																var codi = feature.find('Attribute[name="Codi"]').attr('value');
 																var nom = feature.find('Attribute[name="Nom"]').attr('value');
 																var desc = feature.find('Attribute[name="Tipus"]').attr('value');
@@ -811,7 +812,6 @@ function map_service($http,$rootScope){
 																var cod_tipus = feature.find('Attribute[name="cod_tipus"]').attr('value');
 																var norm = feature.find('Attribute[name="Enllaç normes"]').attr('value');
 																
-
 																html += getHtmlP("Codi", codi);
 																html += getHtmlP("Nom", nom);
 																html += getHtmlP("Tipus", desc);
@@ -820,7 +820,6 @@ function map_service($http,$rootScope){
 																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
 																break;
 
-
 															case "Corredors ambientals":
 															case "Protecció dels rius":
 															case "Aqüifers d'interès":
@@ -828,7 +827,6 @@ function map_service($http,$rootScope){
 																var desc = feature.find('Attribute[name="Descripció"]').attr('value');
 																var norm = feature.find('Attribute[name="Enllaç normes"]').attr('value');
 																var link = feature.find('Attribute[name="Enllaç disposicions generals"]').attr('value');
-																
 
 																html += getHtmlP("Descripció", desc);
 																html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
@@ -1043,11 +1041,18 @@ function map_service($http,$rootScope){
 						ruta += "arquitectonic/";
 				}
 				break;
-			case "Patrimoni":
+			case "Patrimoni arqueològic i paleontològic":
 				ruta += "Catàleg/";
 				switch (label) {
 					case "Fitxa":
 						ruta += "arqueologic/";
+				}
+				break;
+			case "Patrimoni arquitectònic":
+				ruta += "Catàleg/";
+				switch (label) {
+					case "Fitxa":
+						ruta += "arquitectonic/";
 				}
 				break;
 			case "Masies i cases rurals":
