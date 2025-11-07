@@ -776,18 +776,21 @@ function map_service($http,$rootScope){
 														}*/
 
 														switch (layerName) {
-															case "Patrimoni arqueològic i paleontològic":
 															case "Patrimoni arquitectònic":
+															case "Patrimoni arqueològic i paleontològic":
 																var html = "<h3>Elements de "+layerName+"</h3>";
 																var codi = feature.find('Attribute[name="Codi"]').attr('value');
 																var nom = feature.find('Attribute[name="Nom"]').attr('value');
 																var desc = feature.find('Attribute[name="Tipus"]').attr('value');
-																var norm = feature.find('Attribute[name="Enllaç fitxa"]').attr('value');
+																var fitxa = feature.find('Attribute[name="Enllaç fitxa"]').attr('value');
+																var norm = feature.find('Attribute[name="Enllaç normes"]').attr('value');
 
 																html += getHtmlP("Codi", codi);
 																html += getHtmlP("Nom", nom);
 																html += getHtmlP("Tipus", desc);
-																html += getHtmlA("Fitxa", "Veure fitxa", norm, layerName);
+																html += getHtmlA("Fitxa", "Veure fitxa", fitxa, layerName);
+																if (norm)
+																	html += getHtmlA("Normativa", "Veure normativa", norm, layerName);
 																break;	
 
 															case "Masies i cases rurals":
