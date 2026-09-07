@@ -167,7 +167,7 @@ function map_service($http,$rootScope){
 		                        type: 'base',
 		                        visible: false,
 		                        source: new ol.source.XYZ({
-		                        	url: 'https://{1-4}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+		                        	url: 'https://{1-4}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png?key=cb1_2pj4_1_5b8d5ed3e59638c973991284',
 		                        	attributions: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, © <a href="https://carto.com/about-carto/">CARTO</a>',
 		                        })
 		                    });
@@ -177,7 +177,7 @@ function map_service($http,$rootScope){
 		                        type: 'base',
 		                        visible: true,
 		                        source: new ol.source.XYZ({
-		                        	url: 'https://{1-4}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+		                        	url: 'https://{1-4}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png?key=cb1_2pj4_1_5b8d5ed3e59638c973991284',
 		                        	attributions: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, © <a href="https://carto.com/about-carto/">CARTO</a>',
 		                        })
 		                    });
